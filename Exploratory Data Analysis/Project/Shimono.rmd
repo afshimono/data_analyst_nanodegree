@@ -1,0 +1,1270 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
+ International Visitors in Brazil (2005 - 2015) by Alexandre Shimono
+========================================================
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
+# Load all of the packages that you end up using in your analysis in this code
+# chunk.
+
+# Notice that the parameter "echo" was set to FALSE for this code chunk. This
+# prevents the code from displaying in the knitted HTML output. You should set
+# echo=FALSE for all code chunks in your file, unless it makes sense for your
+# report to show the code that generated a particular plot.
+
+# The other parameters for "message" and "warning" should also be set to FALSE
+# for other code chunks once you have verified that each plot comes out as you
+# want it to. This will clean up the flow of your report.
+
+library(ggplot2)
+library(dplyr)
+library(ggmap)
+library(reshape2)
+
+```
+
+```{r echo=FALSE, Load_the_Data}
+# Load the Data
+#setwd('C:/Users/Shimono/Google Drive/Udacity/EDA/Project')
+setwd('C:/Users/ashim/Google Drive/Udacity/EDA/Project')
+#setwd('/home/ashimono/Desktop/')
+
+arrivals <- read.csv('chegadas_2005.csv',sep = ';',fileEncoding="latin1")
+arrivals <- rbind(arrivals,read.csv('chegadas_2006.csv',sep = ';',fileEncoding="latin1"))
+arrivals <- rbind(arrivals,read.csv('chegadas_2007.csv',sep = ';',fileEncoding="latin1"))
+arrivals <- rbind(arrivals,read.csv('chegadas_2008.csv',sep = ';',fileEncoding="latin1"))
+arrivals <- rbind(arrivals,read.csv('chegadas_2009.csv',sep = ';',fileEncoding="latin1"))
+arrivals <- rbind(arrivals,read.csv('chegadas_2010.csv',sep = ';',fileEncoding="latin1"))
+arrivals <- rbind(arrivals,read.csv('chegadas_2011.csv',sep = ';',fileEncoding="latin1"))
+arrivals <- rbind(arrivals,read.csv('chegadas_2012.csv',sep = ';',fileEncoding="latin1"))
+arrivals <- rbind(arrivals,read.csv('chegadas_2013.csv',sep = ';',fileEncoding="latin1"))
+arrivals_2011_2015 <- read.csv('chegadas_2014.csv',sep = ';',fileEncoding="latin1")
+arrivals_2011_2015$X <- NULL
+arrivals <- rbind(arrivals,arrivals_2011_2015)
+remove(arrivals_2011_2015)
+arrivals <- rbind(arrivals,read.csv('chegadas_2015.csv',sep = ';',fileEncoding="latin1"))
+
+colnames(arrivals) <- c('Continent','Ordem.continente','Country','Ordem.pais','State',
+                        'Ordem.UF','Access','Ordem.via.de.acesso','Year','Month',
+                        'Month.Number','Arrivals')
+
+arrivals$Ordem.continente <- NULL
+arrivals$Ordem.pais <- NULL
+arrivals$Ordem.UF <- NULL
+arrivals$Ordem.via.de.acesso <- NULL
+arrivals$Arrivals <- as.numeric(arrivals$Arrivals)
+
+```
+
+This dataset wes retrieved from a Brazilian government website 
+(http://dados.gov.br/dataset/chegada-turistas , in Portuguese) and contains the 
+number of foreign entries in Brazilian territory divided by State. Data from 2005 
+to 2015 is being merged from 10 different CSV files. 
+There are 8 variables: Country of Origin, Continent, State they arrived, 
+ Access method, Year, Month as Text, Month as number and number of visitors that 
+ month.
+
+Unfortunately, all names used are in Portuguese, which should be OK for Country
+names but not that intuitive for access method: 'aérea' means 'by air', 'fluvial'
+means 'by river', 'maritima' means 'by sea' and 'terrestre' means by land, like
+by car, bus, on foot, etc. Month names will be avoided, and Month numbers will be
+used instead.
+
+Before dealing with the data,I have made some previous hypothesis: the majority of 
+visitors in internationally famous cities such as Rio de Janeiro will come from 
+developed countries during Carnival (which happens in February) and big commercial 
+cities such as Sao Paulo will have the largest number of foreign visitors and 
+they will be well distributed over the year.   
+
+Some internal codes from this dataset were removed, which are probably used
+by databases from the government and really do not have any value to our study.
+
+# Univariate Plots Section
+
+```{r echo=FALSE, Summary}
+summary(arrivals)
+```
+
+The present dataset has 251,808 entries in total, but the only numeric variables
+are the number of arrivals and month of the year.
+
+Let's start with the count of registers whose number of accesses is different of
+zero per continent. For some reason, there is a category 'Non specified
+Continent' which makes no sense, so it will be removed. Please note the graph
+had to be flipped to better accomodate the title of the bars.
+
+```{r echo=FALSE, Continent_Count}
+ggplot(subset(arrivals,Arrivals != 0 & Continent != 'Continente não especificado')
+       ,aes(x=Continent)) + geom_histogram(stat = 'count') + coord_flip()
+
+
+```
+
+
+Looking at the graph it seems the majority come from Europe, but since our data is 
+divided by Country too, and Europe has lots of small countries, it does not mean
+necessarily more visitors. The following graph is a look into those 'Non identified 
+Continents'. It seems they arrived mostly in the states of Sao Paulo and Rio de 
+Janeiro, and we will look into it later but this is the first mistery our dataset
+raised.
+
+
+```{r echo=FALSE, State_Unknown_Continents_Count}
+
+ggplot(subset(arrivals,Arrivals != 0& Continent == 'Continente não especificado'),
+       aes(x=State)) + geom_histogram(stat = 'count') + coord_flip()
+
+
+
+```
+
+After checking to which State those "non specified continent" entries headed,
+there is another weird thing about this dataset: some states are merged in one
+groups called "Other States". Let?s check how many states we have in total:
+
+```{r echo=FALSE, State_Count}
+
+ggplot(subset(arrivals,Arrivals != 0),aes(x=State)) + 
+  geom_histogram(stat = 'count') + coord_flip()
+
+
+
+```
+
+There are 17 states out of the 26. The missing states are likely merged in this
+"other states" variable. And visually, this group is the 3rd larger in number of
+non zero entries. So it makes absolutely no sense to keep this in the database,
+it should be split in the missing states. That is some good example of Brazilian
+public services efficiency we are all proud of.
+
+We can also check which access method has more entries.
+
+
+```{r echo=FALSE, Access_Method_Count}
+
+
+ggplot(subset(arrivals,Arrivals != 0),aes(x=Access)) + geom_histogram(stat = 'count')
+
+
+
+```
+
+
+By far the vast majority of entries are 'by air', and this makes sense since 
+Brazil is far from Europe, North America and is considered a continental sized 
+country. It would not be a surprise if all those entries 'by land' are from
+all those 'Latin America' entries from the Continent graph.
+
+Next there is the count of entries per year, removing entries with zero arrivals.
+
+```{r echo=FALSE, Year_Count}
+
+ggplot(subset(arrivals,Arrivals != 0),aes(x=Year)) + geom_histogram(stat = 'count')
+
+
+
+```
+
+There are three recognizable peaks in the graph for 2006, 2008 and 2015. It is 
+interesting that the soccer world cup of 2014 is not a peak, although has a 
+large number.
+
+As mentioned before, it would be expected to see some peaks during summer in
+south hemisphere due to tourism.
+
+```{r echo=FALSE, Month_Count}
+#adjustment of month number
+arrivals$Month.Number <- as.character(arrivals$Month.Number)
+arrivals$Month.Number <- factor(arrivals$Month.Number, levels = c('1','2','3','4',
+                                                                  '5','6','7','8',
+                                                                  '9','10','11','12'))
+ggplot(subset(arrivals,Arrivals != 0),aes(x=Month.Number)) + geom_histogram(stat = 'count')
+
+
+
+```
+
+As expected, the difference for the period of November to February can be seen
+clearly in our last graph.
+
+For our last analysis, we observe the number of arrivals, first overall, then 
+for all values different then zero.
+
+```{r echo=FALSE, Arrival_Count}
+
+summary(arrivals$Arrivals)
+
+
+```
+```{r echo=FALSE, Arrival_non_zero_Count}
+
+summary(subset(arrivals,Arrivals != 0)$Arrivals)
+
+
+```
+
+With a mean of 240 and max of 353122, it seems likely that some very large values
+are pulling the mean up, specially because the 3rd quartile is 11. However, there
+are 1920 NA values where it should be none. After further investigation, it seems
+the file for year 2007 had this problem, as shown below.
+
+
+```{r echo=FALSE, Arrival_non_zero_Summary}
+
+summary(subset(arrivals,is.na(Arrivals)))
+
+
+```
+
+In order to work with a more reasonable dataset, we will consider all those to be
+zeroes, and not some error from the government system.
+
+```{r echo=FALSE, Arrival_non_zero_fix}
+
+arrivals[is.na(arrivals$Arrivals),'Arrivals'] <- 0
+
+```
+
+After running performing this fix, the number of NAs went ot zero, as shown below.
+
+```{r echo=FALSE, Arrival_non_zero_fix_2}
+
+summary(subset(arrivals,is.na(Arrivals)))
+
+```
+
+# Univariate Analysis
+
+
+### What is the structure of your dataset?
+This Dataset consists of 251,808 entries containing 8 variables, from which only
+7 will be properly used. It describes the foreign visitors that entered Brazilian
+border providing number of arrivals in one month, number of month, year, country
+of origin, continent of country of origin, in which state they arrived and 
+the method of access (by air, land, river or sea).
+
+After analyzing distributed data, one thing drawed my attention: the number of
+arrivals from a "unknown country or continent". Before digging deeper into it,
+it seems weird that a government database would have such entries, specially
+because of illegal immigration control.
+
+### What is/are the main feature(s) of interest in your dataset?
+The main interest of this Dataset is to understand how foreign visitors enter
+Brazil. The variable that will be most used in every graph and analysis is the
+total arrivals, which will be evaluated monthly, yearly, and in all possible 
+situations.
+
+### What other features in the dataset do you think will help support your \
+investigation into your feature(s) of interest?
+Region of the state might help show where the main flow of foreigners is. Also,
+the month can help visualize seasonal events like Carnival in some States. It 
+might be possible to correlate visitor flow throught years with global events,
+such as the 2008 economic crisis in the USA and the World.
+
+### Did you create any new variables from existing variables in the dataset?
+Not yet, but it might be necessary if I want to plot the months in sequence
+year after year.
+
+### Of the features you investigated, were there any unusual distributions? \
+Did you perform any operations on the data to tidy, adjust, or change the form \
+of the data? If so, why did you do this?
+It was not necessary yet.
+
+
+# Bivariate Plots Section
+
+The first thing we can see is how the variable of our interest (number of arrivals)
+behaves through the years.
+
+```{r echo=FALSE, Bivariate_Plots_Arrivals_per_Year}
+ggplot(arrivals,aes(x=Year,y=Arrivals/1000000)) + geom_col(alpha = 1)+ 
+  ylab('Arrivals(Millions)')
+
+```
+
+
+It is observable that there has been a slight increase in the number of foreign
+visitors since 2013. It is also possible to see how the accumulated visits are
+distributed through the continents on the graph below.
+
+```{r echo=FALSE, Bivariate_Plots_Arrivals_per_year_per_continent}
+ggplot(subset(arrivals,Continent != "Continente n?o especificado"),
+       aes(x=Year,y=Arrivals/1000000)) + geom_col(alpha = 1)+ 
+  facet_wrap(~Continent)+ ylab('Arrivals(Millions)')
+
+```
+
+From this graph we can understand that this increase is specially because of
+South America. For the other two continents with most visitors, Europe and
+North America, there has been a slight decrease in arrivals. 
+
+Below we have the graph of arrivals per continent in this 10 year window.
+South America and Europe have by far the larger number of visitors.
+
+```{r echo=FALSE, Bivariate_Plots_Arrivals_per_Continent}
+idx <- arrivals %>% group_by(Continent) %>% summarize(Arrivals = sum(Arrivals))
+ggplot(idx,aes(x=reorder(Continent,Arrivals),y=Arrivals/1000000)) + 
+  geom_col(alpha = 1) + ylab('Arrivals(Millions)') + xlab('Continent')+ 
+  coord_flip()
+remove(idx)
+```
+
+Next we observe how the sum of arrivals is ditributed trhough the months of the year. 
+As expected, there is a larger number of arrivals during summer time in Brazil. 
+However, there is an unexplained increase in July. So far, one possibility is due 
+to the summer hollidays in the north hemisphere.
+
+```{r echo=FALSE, Bivariate_Plots_Arrivals_per_month}
+ggplot(arrivals,aes(x=Month.Number,y=Arrivals/1000000)) + geom_col(alpha = 1) + 
+  ylab('Arrivals(Millions)') + xlab('Month of Year')
+
+```
+
+Still while trying to understand the seasonal behaviour of international
+visitors, a new dataframe was created grouping the monthly sum of visitors
+per month, and a boxplot was created. As seen below, January is by far the month
+with most visitors. This single dot on June with over a million visitors
+happened in 2014, precisely during the soccer world cup.
+
+```{r echo=FALSE, Bivariate_Plots_Arrivals_per_Month_boxplot}
+monthly_arrivals <- arrivals %>% group_by(Year,Month.Number) %>% 
+  summarize(Arrivals = sum(Arrivals))
+
+ggplot(arrivals %>% group_by(Year,Month.Number) %>% summarize(Arrivals = sum(Arrivals)),
+       aes(x=Month.Number,y=Arrivals/1000)) + geom_boxplot() + 
+  ylab('Arrivals(Thousands)') + xlab('Month of Year')
+remove(monthly_arrivals)
+```
+
+The next plot shows how those international visitors got here. It is reasonable
+to suppose that the large majority of those land entries are from South American
+countries. Also, visitors that entered the country by air sums up more than twice
+all other categories together.
+
+```{r echo=FALSE, Bivariate_Plots_Arrivals_per_Access_Method}
+idx <- arrivals %>% group_by(Access) %>% summarize(Arrivals = sum(Arrivals))
+ggplot(idx,aes(x=reorder(Access,Arrivals),y=Arrivals/1000000)) + geom_col(alpha = 1)+ 
+  ylab('Arrivals(Millions)') + xlab('Access Method')
+remove(idx)
+```
+
+Next plot is about which State do visitors arrive. It is important to note that
+this does not necessarily mean this is were they are headed: Sao Paulo often
+has the cheapest fares and larger capacity for international flights, so many 
+visitors arrive there and then get a domestic flight to another State.
+
+```{r echo=FALSE, Bivariate_Plots_Arrivals_per_State}
+idx <- arrivals %>% group_by(State) %>% summarize(Arrivals = sum(Arrivals))
+ggplot(idx,aes(x=reorder(State,Arrivals),y=Arrivals/1000000)) + geom_col(alpha = 1) + 
+  ylab('Arrivals(Millions)') + xlab('State')+ coord_flip()
+remove(idx)
+```
+
+In order to analyse each country, I divided the graphs by continent to avoid 
+the graph to get messy. On the next graphs it is evident how this idea of using
+a "other countries" category is wrong and wastes lots of what could be useful
+information. In Africa, Asia and Central America, this category has very large
+values. Despite the fact that together they sum up to around 1.2 Million visitors,
+which is around 2% of the nearly 50 Million visitors over the 10 years used,
+they play an important role if studying each continent individually.
+
+```{r echo=FALSE, Bivariate_Plots_Arrivals_per_Country_Africa}
+
+ggplot(subset(arrivals, Continent == 'África' & Arrivals > 0),
+       aes(x=Country,y=Arrivals/1000, ordered = TRUE)) + geom_col(alpha = 1) + 
+  ylab('Arrivals(Thousands)') + xlab('Country')+ ggtitle('Africa') + 
+  coord_flip()
+```
+
+```{r echo=FALSE, Bivariate_Plots_Arrivals_per_Country_Europe}
+idx <- arrivals %>% filter(Continent == "Europa") %>% group_by(Country) %>%
+  summarize(Arrivals = sum(Arrivals))
+ggplot(idx,aes(x=reorder(Country,Arrivals),y=Arrivals/1000000)) + 
+  geom_col(alpha = 1) + ylab('Arrivals(Millions)') + xlab('Country')+ 
+  coord_flip() + ggtitle('Europe')
+remove(idx)
+```
+
+
+
+
+```{r echo=FALSE, Bivariate_Plots_Arrivals_per_Country_Asia}
+ggplot(subset(arrivals, Continent == 'Ásia'),aes(x=Country,y=Arrivals/1000)) + 
+  geom_col() + ylab('Arrivals(Thousands)') + xlab('Country')+ coord_flip() +
+  ggtitle('Asia')
+```
+
+
+```{r echo=FALSE, Bivariate_Plots_Arrivals_per_Country_Oceania}
+ggplot(subset(arrivals, Continent == 'Oceania'),aes(x=Country,y=Arrivals/1000000)) +
+  geom_col() + ylab('Arrivals(Millions)') + xlab('Country')+ coord_flip() +
+  ggtitle('Oceania')
+```
+
+
+```{r echo=FALSE, Bivariate_Plots_Arrivals_per_Country_SA}
+southamerica <- arrivals %>% filter(Continent == 'América do Sul') %>% 
+  group_by(Country) %>% summarize(Arrivals = sum(Arrivals))
+ggplot(southamerica,aes(x=reorder(Country,Arrivals),y=Arrivals/1000000)) +
+  geom_col() + ylab('Arrivals(Millions)') + xlab('Country')+ coord_flip() +
+  ggtitle('South America')
+remove(southamerica)
+
+```
+
+
+```{r echo=FALSE, Bivariate_Plots_Arrivals_per_Country_CA}
+ggplot(subset(arrivals, Continent == 'América Central e Caribe'),
+       aes(x=Country,y=Arrivals/1000)) + geom_col() + ylab('Arrivals(Thousands)') +
+  xlab('Country')+ coord_flip() + ggtitle('Central America')
+```
+
+# Bivariate Analysis
+
+
+### Talk about some of the relationships you observed in this part of the \
+investigation. How did the feature(s) of interest vary with other features in \
+the dataset?
+
+Number of arrivals is mainly composed of three continents: South America,
+Europe and North America. Vast majority arrived in the country by air, second
+most common was by land. The State that received the most visitors was Sao Paulo.
+We observed some seasonality in the monthly distribution of visitors, and that
+the total number of visitors is increasing through the last years (since 2010).
+
+### Did you observe any interesting relationships between the other features \
+(not the main feature(s) of interest)?
+
+Since the only numeric value is the number of arrivals, it is not yet possible
+to make this association. We will explore it in the next session of
+"Multivariate Abalysis".
+
+### What was the strongest relationship you found?
+
+The largest number of visitors come from Argentina with around 15 million visitors
+over those years. Another interesting fact is the ammount of visitors by air.
+Finally, the distribution of visitors over the months was also very interesting.
+
+# Multivariate Plots Section
+
+In order to better understand the big picture, we analyse the distribution of
+total visitors per continent per access method. The first impression is that if 
+visitors enter Brazil by air more than twice they enter by land, if we see continents
+individually, South America has almost the same number of visitors in both access
+methods. One interesting point we can see in this graph is the large number
+of europeans entering Brazil by land.
+
+```{r echo=FALSE, Multivariate_Plots_Arrivals_per_Year_Continent}
+
+ggplot(arrivals %>% group_by(Year,Access,Continent) %>% 
+         summarise(Arrivals = sum(Arrivals)) %>% filter(Arrivals > 0),
+       aes(x=Year,y=Arrivals/1000000)) + geom_line(aes(color=Continent, 
+                                                       group=Continent)) + 
+  ylab('Arrivals(Millions)') + scale_y_sqrt() + facet_wrap(~Access) + 
+  scale_x_continuous(breaks = seq(2005,2015,2))
+
+```
+
+We will further study the two continents with the most visitors: Europe and
+South America. The next graph shows which countries in South America visits
+Brazil the most. Our "hermanos" from Argentina won this one.
+
+```{r echo=FALSE, Multivariate_Plots_Arrivals_South_America_per_Country}
+ggplot(arrivals %>% group_by(Year,Continent,Country,Access) %>% 
+         summarise(Arrivals = sum(Arrivals)) %>% filter(Arrivals > 0 & 
+                                                          Continent == 'América do Sul'),
+       aes(x=Year,y=Arrivals/1000000)) + geom_line(aes(color=Country, group = Country)) +
+  ylab('Arrivals(Millions)') + scale_y_sqrt() +
+  scale_x_continuous(breaks = seq(2005,2015,2)) + facet_wrap(~Access)
+```
+
+The next graph attempts to correlate countries from South America and the Brazilian
+State they used to enter Brazil, per year, all done by land. The scale had to be
+enlarged to make some details visible. Arrivals equals to zero have been removed
+from the graph, to make it cleaner. As expected, visitors arrive 
+in the state closest to the border between the countries. Because the difference 
+in numbers between countries was too big, I used the sqrt function on the number 
+of arrivals, so it is possible to see the smaller values. Here we have some 
+interesting facts: Venezuela, Peru, Bolivia and Guiana changed the State they 
+enter Brazil since 2014.
+Also, some argentinians are entering Brazil from Roraima, a State on the northern
+border. Why would they travel that far?
+
+```{r echo=FALSE ,fig.width=10, fig.height=20, Multivariate_Plots_South_America_by_Land_per_State_per_Year}
+#Reordering States from Nothern to Southern
+arrivals$StateNorthSouth <- factor(arrivals$State,c('Outras Unidades da Federação',
+'Roraima','Amapá','Amazonas','Pará','Maranhão','Piauí','Ceará','Rio Grande do Norte',
+'Tocantins','Paraíba','Pernambuco','Alagoas','Acre','Bahia','Sergipe',
+'Rondônia','Mato Grosso','Goiás','Distrito Federal','Minas Gerais', 
+'Espírito Santo','Mato Grosso do Sul','Rio de Janeiro','São Paulo','Paraná',
+'Santa Catarina','Rio Grande do Sul'))
+
+ggplot(arrivals %>% filter(Access == 'Terrestre' & Continent == 'América do Sul'
+                           & Arrivals > 0) %>% group_by(Country,Year,StateNorthSouth)
+       %>% summarise(Arrivals = sum(Arrivals)) ,aes(Year,sqrt(Arrivals/100000))) +
+  geom_line(aes(colour=StateNorthSouth),size=2) + scale_x_continuous(breaks = seq(2005,2015,2)) +
+  facet_grid(Country~.,scales = 'free_y') + ggtitle('Arrivals by Land in South America') +
+  labs(colour = 'State') + ylab('Sqrt of Arrivals(Millions)')
+
+```
+
+Appplying the same criteria for visitors that arrived by air, we notice the large
+majority entered Brazil in São Paulo and Rio de Janeiro. Also, it seems that
+international flights to Roraima started only in 2014, since there are no records
+before that. Visitors from Guiana and Guiana Francesa dropped drastically around
+2009. Overall, there is an increase in visitors by air.
+
+```{r echo=FALSE,fig.width=10, fig.height=20, Multivariate_Plots_South_America_by_Air_per_State_per_Year}
+ggplot(arrivals %>% filter(Access == 'Aérea' & Continent == 'América do Sul' & 
+                             Arrivals > 0) %>% group_by(Country,Year,StateNorthSouth) %>%
+         summarise(Arrivals = sum(Arrivals)) ,aes(Year,sqrt(Arrivals/100000))) + 
+  geom_line(aes(colour=StateNorthSouth),size=2) + scale_x_continuous(breaks = 
+                                                                       seq(2005,2015,2)) + 
+  facet_grid(Country~.,scales = 'free_y') + ggtitle('Arrivals by Air in South America') + 
+  labs(colour='State') + ylab('Sqrt of Arrivals(Millions)')
+```
+
+
+The next two graphs are an attempt to do the previous analysis but from european
+visitors. Europe has more countries, so it would be really messy to create a large
+list of graphs. The idea on the next graphs is that each pair state-country has a
+dot. This dot is composed of may rings: the outer ring is the year 2005 and the 
+inner dot represents 2015. The color of each ring is a gradient representing the
+number of visitors, where red meand the most and blue the least. So, red dots
+means lots of visitors, purple dots average, blue dots means few visitors. If the
+inside of the circle is more red, it means the number of visitors is increasing.
+If the outer ring is more red, it means it is decreasing.
+
+
+```{r echo=FALSE,fig.width=11, fig.height=8, Multivariate_Plots_Europe_by_Air_per_Country_per_Year}
+ggplot(arrivals %>% filter(Access == 'Aérea' & Continent == 'Europa' & Arrivals > 0) %>% 
+         group_by(Country,Year,State) %>% summarise(Arrivals = sum(Arrivals)) ,
+       aes(Country,State)) + geom_point(aes(colour=Arrivals/100000, size=Year))  + 
+  scale_size(range = c(12,3)) + theme(axis.text.x = element_text(angle=90)) + 
+  scale_color_gradient(low = 'blue',high = 'red') + ggtitle('Arrivals from Europe by Air') + 
+  labs(colour='Arrivals(Millions)',size='Years before 2015')
+```
+
+
+```{r echo=FALSE,fig.width=11, fig.height=5, Multivariate_Plots_Europe_by_Land_per_State_per_Country}
+ggplot(arrivals %>% filter(Access == 'Terrestre' & Continent == 'Europa' & Arrivals > 0) %>% 
+         group_by(Country,Year,State) %>% summarise(Arrivals = sum(Arrivals)) ,
+       aes(Country,State)) + geom_point(aes(colour=Arrivals/100000, size=Year))  +
+  scale_size(range = c(12,3)) + theme(axis.text.x = element_text(angle=90)) + 
+  scale_color_gradient(low = 'blue',high = 'red') + ggtitle('Arrivals from Europe by Land') + 
+  labs(colour='Arrivals(Millions)',size='Years before 2015')
+
+```
+
+The following graphs from this analysis will be done using real maps to plot flux of
+visitors. This is something I wanted to learn since a long time ago, and now it
+seems the perfect opportunity. First we have the land entries for South American
+visitors as a connection from the country they came to the state they entered. 
+This graph took a really long time and effort to be produced but it was really
+satisfactory because it shows a lot of things happening in latin america over
+the last 10 years. So the thickness of the line segment is proportional to the
+number of arrivals. The transparency is set to 0.5, and the the color of each
+line varies depending on the year from red to blue. So if arrivals are about the
+same through the 10 years, we should see a purple line, but if they changed we
+see a countour with the color of the year with the largest value. From this
+graph we learn that our neighbours from Argentina are traveling entering more
+recently by land in Rio Grande do Sul and Parana, whereas our neighbours from
+Uruguay seem to have used this access more often in the past because of the
+blueish colour. It is important to remember that this does not mean this state
+is their final destination, just their entrance in the country.
+
+```{r echo=FALSE,fig.width=14, fig.height = 14, Multivariate_Plots_South_America_Map_by_Land_by_Country_by_Year}
+#Reordering States from Northern to Southern
+arrivals$StateNorthSouth <- factor(arrivals$State,c('Roraima','Amapá','Amazonas',
+'Pará','Maranhão','Piauí','Ceará','Rio Grande do Norte','Tocantins','Paraíba',
+'Pernambuco','Alagoas','Acre','Bahia','Sergipe','Rondônia','Mato Grosso','Goiás',
+'Distrito Federal','Minas Gerais', 'Espírito Santo','Mato Grosso do Sul',
+'Rio de Janeiro','São Paulo','Paraná','Santa Catarina','Rio Grande do Sul'))
+
+#Generates resume of arrivals
+latam_land_arrivals <- arrivals %>% filter(Access == 'Terrestre' & Continent == 
+                                             'América do Sul' & Arrivals > 0 & 
+                                             State != 'Outras Unidades da Federação') %>% 
+  group_by(Country,Year,StateNorthSouth) %>% summarise(Arrivals = sum(Arrivals))
+
+if(!file.exists('latam_land_arrivals_states.csv')){
+  states <- as.data.frame(latam_land_arrivals %>% group_by(StateNorthSouth) %>%
+                            ungroup() %>% distinct(StateNorthSouth))
+  colnames(states) <- "names"
+  geocode_result <- NA
+  for(i in 1:nrow(states)){
+    row <- states[i,"names"]
+    geocode_result$lon <- NA
+    stop_counter <- 0
+    #this will attempt 20 times with a 2 seconds interval. If it is not working... 
+    #it is not working! Try another time!
+    while(is.na(geocode_result$lon) & stop_counter < 20){
+      geocode_result <- geocode(iconv(paste(row," Brasil"), "ISO_8859-2", "UTF-8"),
+                                output="latlon")   #had to do this iconv because of 
+      #latin characters, otherwise would use as.character
+      stop_counter <- stop_counter + 1
+      Sys.sleep(2)
+    }
+    if(!is.na(geocode_result$lon)){
+      states[i,2] <- as.numeric(geocode_result$lon)
+      states[i,3] <- as.numeric(geocode_result$lat)}
+    else{stop()}
+    
+  }
+  colnames(states) <- c("names","state_lon","state_lat")
+  write.csv(states, file='latam_land_arrivals_states.csv',row.names = FALSE)} else {
+  
+  states <- read.csv('latam_land_arrivals_states.csv',sep = ',',fileEncoding="latin1")
+}
+
+if(!file.exists('latam_land_arrivals_countries.csv')){
+  countries <- as.data.frame(latam_land_arrivals %>% ungroup() %>% distinct(Country))
+  colnames(countries) <- "names"
+  geocode_result <- NA
+  for(i in 1:nrow(countries)){
+    row_value <- iconv(countries[i,"names"], "ISO_8859-2", "UTF-8")
+    geocode_result$lon <- NA
+    stop_counter <- 0
+    #this will attempt 20 times with a 2 seconds interval. If it is not working...
+    #it is not working! Try another time!
+    while(is.na(geocode_result$lon) & stop_counter < 20){
+      geocode_result <- geocode(row_value,output="latlon")   #had to do this iconv
+     # because of latin characters, otherwise would use as.character
+      stop_counter <- stop_counter + 1
+      Sys.sleep(2)
+    }
+    if(!is.na(geocode_result$lon)){
+      countries[i,2] <- as.numeric(geocode_result$lon)
+      countries[i,3] <- as.numeric(geocode_result$lat)}
+    else{stop()}
+}
+colnames(countries) <- c("names","country_lon","country_lat")
+write.csv(countries, file='latam_land_arrivals_countries.csv',row.names = FALSE)} else {
+  countries <- read.csv('latam_land_arrivals_countries.csv',sep = ',',fileEncoding="latin1")
+}
+
+latam_land_arrivals <- merge(latam_land_arrivals,states,by.x="StateNorthSouth",by.y="names")
+latam_land_arrivals <- merge(latam_land_arrivals,countries,by.x="Country",by.y="names")
+
+map <- get_googlemap('Bolivia',zoom = 4,maptype='roadmap')
+ggmap(map) + geom_segment(data = latam_land_arrivals,aes(x=country_lon,y=country_lat,xend=
+                                                           state_lon,yend=state_lat,colour=Year,size=Arrivals/100000,alpha=Arrivals/2500000),lineend="round")+ 
+  scale_colour_gradient(low = "blue", high = "red") + ggtitle('Arrivals from South America per State by Land') + labs(size='Arrivals(Millions)',Year='Year') + guides(alpha=FALSE)+ scale_alpha(range = c(0.1,0.3))
+
+```
+Finally, last but not least, we have an image showing the accumulated arrivals
+over 10 years per state, separated per continent. This is interesting to see how
+the different regions of Brazil has indeed a different kind of visitor. North and
+Northeast is a more touristic region, with tropical sunny beaches, and indeed
+attract more european visitors, even in absolute numbers. The south seems to 
+receive more south americans, probably from Argentina from what we have seem so
+far.
+```{r echo=FALSE,fig.width=16, fig.height = 10, Multivariate_Plots_World_Air_Map_by_Country_by_Year}
+#Reordering States from Nothern to Southern
+arrivals$StateNorthSouth <- factor(arrivals$State,c('Roraima','Amapá','Amazonas',
+'Pará','Maranhão','Piauí','Ceará','Rio Grande do Norte','Tocantins','Paraíba',
+'Pernambuco','Alagoas','Acre','Bahia','Sergipe','Rondônia','Mato Grosso','Goiás',
+'Distrito Federal','Minas Gerais', 'Espírito Santo','Mato Grosso do Sul',
+'Rio de Janeiro','São Paulo','Paraná','Santa Catarina','Rio Grande do Sul'))
+
+world_air_arrivals <- arrivals %>% filter(Access == 'Aérea' & Arrivals > 0 & 
+                                            State != 'Outras Unidades da Federação'
+                                          & Country != 'Outros países' & Country
+                                          != 'Países não especificados') %>% 
+  group_by(Continent,StateNorthSouth) %>% summarise(Arrivals = sum(Arrivals))
+
+if(!file.exists('world_air_arrivals_states.csv')){
+  states <- as.data.frame(world_air_arrivals %>% group_by(StateNorthSouth) %>%
+                            ungroup() %>% distinct(StateNorthSouth))
+  colnames(states) <- "names"
+  geocode_result <- NA
+  for(i in 1:nrow(states)){
+    row <- states[i,"names"]
+    geocode_result$lon <- NA
+    stop_counter <- 0
+    #this will attempt 20 times with a 2 seconds interval. If it is not working... 
+    #it is not working! Try another time!
+    while(is.na(geocode_result$lon) & stop_counter < 20){
+      geocode_result <- geocode(iconv(paste(row," Brasil"), "ISO_8859-2", "UTF-8"),
+                                output="latlon")   #had to do this iconv because of 
+      #latin characters, otherwise would use as.character
+      stop_counter <- stop_counter + 1
+      Sys.sleep(2)
+    }
+    if(!is.na(geocode_result$lon)){
+      states[i,2] <- as.numeric(geocode_result$lon)
+      states[i,3] <- as.numeric(geocode_result$lat)}
+    else{stop()}
+    
+  }
+  colnames(states) <- c("names","state_lon","state_lat")
+  write.csv(states, file='world_air_arrivals_states.csv',
+            row.names = FALSE)} else {
+  
+  states <- read.csv('world_air_arrivals_states.csv',sep = ',',
+                     fileEncoding="latin1")
+}
+
+world_air_arrivals <- merge(world_air_arrivals,states,
+                            by.x="StateNorthSouth",by.y="names")
+
+map <- get_googlemap('Brasil',zoom = 4,maptype='roadmap')
+ggmap(map) + geom_point(data = world_air_arrivals,aes(x=state_lon,
+                                                      y=state_lat,size=Arrivals/1000000,
+                                                      alpha=0.5,color=Continent)) +
+  scale_size_area(max_size = 35)+
+  ggtitle('Arrivals Worldwide by Air per State from 2005 to 2015') + 
+  labs(size='Arrivals(Millions)',Continent='Continent') + 
+  guides(alpha=FALSE)+ scale_alpha(range = c(0.3,0.5))
+
+```
+Next thing to be analysed is the seasonality of international visitors. First we
+verify how each continent contributed over the 10 year interval.
+
+```{r echo=FALSE,fig.width=10, fig.height=8, Multivariate_Plots_World_by_Air_per_Month}
+arrivals$Month <- factor(arrivals$Month,levels = c("janeiro","fevereiro","março","abril",
+            "maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"))
+ggplot(arrivals %>% filter(Continent != "Continente não especificado" &
+                             Access == 'Aérea' & Arrivals > 0) %>% 
+         group_by(Continent,Month) %>% summarise(Arrivals = sum(Arrivals)) ,
+       aes(Month,Arrivals/1000000,group=Continent,colour=Continent))+ 
+  geom_line(size=1) +geom_point(size=2) + 
+ggtitle('World Arrivals by Air by Month from 2005 to 2015') + 
+  labs(colour='Continent') + ylab('Arrivals(Millions)')
+```
+
+There are clearly three main players in foreign visitors in Brazil: North America,
+Europe and South America. However, we wish to learn about seasonality, therefore
+we must see the distribution of visits along the years, each month. This can
+be seen on the graph below.
+
+```{r echo=FALSE,fig.width=10, fig.height=8, Multivariate_BoxPlots_World_by_Continent_by_Air_per_Month}
+ggplot(arrivals %>% filter(Continent != "Continente não especificado" & 
+    Access == 'Aérea' & Arrivals > 0) %>% group_by(Year,Continent,Month.Number) %>% 
+    summarise(Arrivals = sum(Arrivals)) ,aes(Month.Number,Arrivals/10000))+ 
+  geom_boxplot(aes(group=Month.Number),outlier.shape=NA)+ 
+scale_x_discrete(breaks = seq(1,12,1))  + 
+  ggtitle('World Arrivals by Continent by Air by Month') + labs(colour='Continent') + 
+ylab('Arrivals(10.000)') + facet_grid(Continent~.,scales = "free_y") + 
+  geom_point(alpha=0.2)
+```
+
+The outlier on June for every continent happened during the World cup of 2014.
+But besides that, we can observe some interesting points: Asia and North America
+appear to have more evenly distributed visitors, which suggests more a professional 
+nature of the visits (not tourism). Europe and South America, on the other hand,
+seems to have more visitors during summer time.
+
+```{r echo=FALSE,fig.width=10, fig.height=6, Multivariate_Plots_World_by_Land_per_Month}
+arrivals$Month <- factor(arrivals$Month,levels = c("janeiro","fevereiro","março","abril",
+            "maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"))
+ggplot(arrivals %>% filter(Continent != "Continente não especificado" & 
+    Access == 'Terrestre' & Arrivals > 0) %>% group_by(Continent,Month) %>% 
+  summarise(Arrivals = sum(Arrivals)) ,aes(Month,Arrivals/1000000,
+  group=Continent,colour=Continent))+ geom_line(size=1) +geom_point(size=2) +
+ggtitle('World Arrivals by Land by Month') + labs(colour='Continent') + 
+ylab('Arrivals(Millions)')
+```
+
+It is noticeable a huge difference between South America arrivals and the rest
+of the world. For this reason, we can already skip a few steps in this case
+and use information of previous graphs about which states receive the most
+foreign visitors from South America by Land and make a smaller list.
+
+```{r echo=FALSE,fig.width=10, fig.height=10, Multivariate_BoxPlots_World_by_Land_per_Month}
+ggplot(arrivals %>% filter(Continent == "América do Sul" & Access == 'Terrestre'
+                           & StateNorthSouth %in% c("Mato Grosso do Sul","Paraná",
+                                                    "Santa Catarina","Rio Grande do Sul")&
+                             Arrivals > 0) %>% group_by(Year,StateNorthSouth,
+                                                        Month.Number) %>% 
+         summarise(Arrivals = sum(Arrivals)) ,aes(Month.Number,Arrivals/100000))+ 
+  geom_boxplot(aes(group=Month.Number),outlier.alpha = 0.5)+ 
+  scale_x_discrete(breaks = seq(1,12,1))  + 
+  ggtitle('South America Arrivals by Land by Month')  + 
+  ylab('Arrivals(100.000)') + facet_grid(StateNorthSouth~.,scale="free_y")
+```
+In addition to the map that correlates States and Countries, it provides an 
+intereting insight about land access to Brazil: it happens mainly through the 
+States of Paraná and Rio Grande do Sul and happens mostly for tourism (seasonaly).
+
+```{r echo=FALSE,fig.width=10, fig.height=8, Multivariate_BoxPlots_World_by_State_per_Month}
+ggplot(arrivals %>% filter(Continent != "Continente não especificado" & 
+StateNorthSouth %in% c("Paraná","Santa Catarina","Rio Grande do Sul",
+"São Paulo","Rio de Janeiro","Bahia","Ceará","Pernambuco")&Arrivals > 0) %>% 
+group_by(Year,StateNorthSouth,Month.Number) %>% summarise(Arrivals = sum(Arrivals)) ,
+aes(Month.Number,Arrivals/100000))+ geom_boxplot(aes(group=Month.Number),
+outlier.shape = NA)+ scale_x_discrete(breaks = seq(1,12,1))  + 
+ggtitle('World Arrivals by State by Month')  + ylab('Arrivals(100.000)') + 
+facet_grid(StateNorthSouth~.,scales="free_y")
+```
+
+As the last graph, a model to quantify which states are the most "internationalized" 
+and most turistic is proposed.
+First, the absolute number of arrivals is no longer used, but instead it was
+replaced by the which percentage of the State population it represents. This metric
+seems to make sense since a smaller State which receives lots of international
+visitors would be more apparent, whereas a large State which doesn´t increase it´s
+number of citizens during the holidays would not be that noticeable. To do this,
+another data source was needed, the population of each State, but unfortunately
+it is measured only every 10 years by our census. It is available on:
+
+https://seriesestatisticas.ibge.gov.br/series.aspx?no=10&op=0&vcodigo=CD90&t=populacao-presente-residente
+
+To make visualization easier, the 12 months were grouped in two main categories:
+warmer months and colder months. The idea behind this is the following: if we see
+how temperatures are distributed anually in a colder southern state such as 
+Santa Catarina for instance, we notice that around november weather is already
+pretty nice to go to the beach, and it will be ok until around March.
+
+Here´s some data from Wikipedia from my city, Balneário Camboriu, for an
+example:
+
++-------+---------------+-------------+--------------+
+| Month	| Year Average  | Daily mean  | Average low  |
+|       | high °C (°F)  | °C (°F)     | °C (°F)      |
++=======+===============+=============+==============+
+|  Jan  |29.0 (84.2)    |24.2 (75.6)  |19.8 (67.6)   |
++-------+---------------+-------------+--------------+
+|  Feb  |28.8 (83.8)    |24.1 (75.4)  |19.6 (67.3)   |
++-------+---------------+-------------+--------------+
+|  Mar  |28.3 (82.9)    |23.5 (74.3)  |18.7 (65.7)	 |
++-------+---------------+-------------+--------------+
+|  Apr  |25.8 (78.4)    |20.8 (69.4)  |15.8 (60.4)   |
++-------+---------------+-------------+--------------+
+|  May  |23.8 (74.8)    |18.4 (65.1)  |13.1 (55.6)   |
++-------+---------------+-------------+--------------+
+|  Jun  |22.1 (71.8)    |16.7 (62.1)  |11.3 (52.3)   |
++-------+---------------+-------------+--------------+
+|  Jul  |21.3 (70.3)    |15.8 (60.4)  |10.4 (50.7)   |
++-------+---------------+-------------+--------------+
+|  Aug  |21.5 (70.7)    |16.5 (61.7)  |11.6 (52.9)	 |
++-------+---------------+-------------+--------------+
+|  Sep  |22.1 (71.8)    |17.8 (64)    |13.6 (56.5)   |
++-------+---------------+-------------+--------------+
+|  Oct  |23.7 (74.7)    |19.5 (67.1)  |15.3 (59.5)   |	
++-------+---------------+-------------+--------------+
+|  Nov  |25.4 (77.7)    |21.0 (69.8)  |16.6 (61.9)   |	
++-------+---------------+-------------+--------------+
+|  Dec  |27.3 (81.1)    |22.7 (72.9)  |18.2 (64.8)   |	
++-------+---------------+-------------+--------------+
+
+
+So this last graph was built plotting these percentages of each State population,
+per month, categorized if this month is either a hot or cold month according to 
+the criteria described previously, with a very low alpha value. That way, if
+a similar number of occurrences for both hot and cold categories happen we should
+see a purple color. Otherwise, we should see a tendency towards blue or red.
+Also, the size of the the point is proportion to the percentage of the arrivals
+regarding the size of each state population, hence bigger points means bigger
+percentages. 
+
+So, according to this model, the most international State (and it is important
+to remember that it doesn´t mean those visitors stayed in this state, maybe they
+were just passing by) is Rio Grande do Sul. 												
+
+
+```{r echo=FALSE,fig.width=16, fig.height = 10, Multivariate_Plots_World_Map_by_State_by_Season_Year_Facet}
+#Reordering States from Nothern to Southern
+arrivals$StateNorthSouth <- factor(arrivals$State,c('Roraima','Amapá','Amazonas',
+'Pará','Maranhão','Piauí','Ceará','Rio Grande do Norte','Tocantins','Paraíba',
+'Pernambuco','Alagoas','Acre','Bahia','Sergipe','Rondônia','Mato Grosso','Goiás',
+'Distrito Federal','Minas Gerais', 'Espírito Santo','Mato Grosso do Sul',
+'Rio de Janeiro','São Paulo','Paraná','Santa Catarina','Rio Grande do Sul'))
+
+world_season_arrivals <- arrivals %>% filter( Arrivals > 0 & State != 
+'Outras Unidades da Federação' & Country != 'Outros países' & Country != 
+  'Países não especificados') %>% group_by(Access,Year,StateNorthSouth,Month.Number)%>% 
+  summarise(Arrivals = sum(Arrivals))
+
+if(!file.exists('world_season_arrivals_states.csv')){
+  states <- as.data.frame(world_season_arrivals %>% group_by(StateNorthSouth) %>% 
+                          ungroup() %>% distinct(StateNorthSouth))
+  colnames(states) <- "names"
+  geocode_result <- NA
+  for(i in 1:nrow(states)){
+    row <- states[i,"names"]
+    geocode_result$lon <- NA
+    stop_counter <- 0
+    #this will attempt 20 times with a 2 seconds interval. If it is not working... 
+    #it is not working! Try another time!
+    while(is.na(geocode_result$lon) & stop_counter < 20){
+      geocode_result <- geocode(iconv(paste(row," Brasil"), "ISO_8859-2", 
+                                      "UTF-8"),output="latlon")   
+      #had to do this iconv because of latin characters, otherwise would use as.character
+      stop_counter <- stop_counter + 1
+      Sys.sleep(2)
+    }
+    if(!is.na(geocode_result$lon)){
+      states[i,2] <- as.numeric(geocode_result$lon)
+      states[i,3] <- as.numeric(geocode_result$lat)}
+    else{stop()}
+    
+  }
+  colnames(states) <- c("names","state_lon","state_lat")
+  write.csv(states, file='world_season_arrivals_states.csv',row.names = FALSE)} else {
+  
+  states <- read.csv('world_season_arrivals_states.csv',sep = ',',fileEncoding="latin1")
+}
+
+#reads table with population info
+population <- read.csv("population.csv",sep=",",fileEncoding = "latin1",header = TRUE)
+colnames(population) <- c("State",seq(2005,2015,1))
+population <- melt(population, id.vars="State",measure.vars = as.character(seq(2005,2015,1)))
+colnames(population) <- c("State","Year","Population")
+
+world_season_arrivals <- merge(world_season_arrivals,states,by.x="StateNorthSouth",
+                               by.y="names")
+world_season_arrivals <- merge(world_season_arrivals,population,
+                    by.x=c("StateNorthSouth","Year"),by.y=c("State","Year"))
+world_season_arrivals$Percentage <- 
+  (world_season_arrivals$Arrivals / world_season_arrivals$Population ) * 100
+world_season_arrivals$Season <- 
+  cut(as.numeric(world_season_arrivals$Month.Number),
+      breaks =c(0,3,10,12) ,labels = c("Hot","Cold","Hot2"))
+world_season_arrivals$Season <- 
+  gsub('Hot2','Hot',world_season_arrivals$Season)
+
+map1 <- get_googlemap('Goias',zoom = 4,maptype='roadmap')
+ggmap(map1) + geom_jitter(data = world_season_arrivals,
+aes(x=state_lon,y=state_lat,size=Percentage,alpha=0.1,colour=Season),
+width = 0.15,height = 0.15)+ scale_size_area(max_size = 10) +
+  ggtitle('Arrivals Worldwide per State per Season from 2005 to 2015') + 
+  labs(size='Arrivals as Percentage of State Population') + 
+  guides(alpha=FALSE) + scale_color_manual(values = c("Hot"="Red","Cold"="Blue")) +
+  scale_alpha(range = c(0.2,0.3)) + facet_wrap(~Access, ncol = 2)
+```
+
+```{r echo=FALSE,fig.width=16, fig.height = 10, Multivariate_Plots_World_Map_by_State_by_Season_Year}
+world_season_arrivals <- world_season_arrivals %>% ungroup() %>% 
+  group_by(StateNorthSouth,Year,Month.Number,state_lon,state_lat,Population,Season) %>% 
+  summarise(Arrivals = sum(Arrivals))
+world_season_arrivals$Percentage <- 
+  (world_season_arrivals$Arrivals / world_season_arrivals$Population ) * 100
+map2 <- get_googlemap('Goias',zoom = 4,maptype='roadmap')
+ggmap(map2) + geom_jitter(data = world_season_arrivals,
+    aes(x=state_lon,y=state_lat,size=Percentage,alpha=0.1,colour=Season),
+    width = 0.15,height = 0.15)+ scale_size_area(max_size = 20) +
+ggtitle('Arrivals Worldwide per State per Season from 2005 to 2015') + 
+labs(size='Arrivals as Percentage of State Population') + guides(alpha=FALSE) + 
+scale_color_manual(values = c("Hot"="Red","Cold"="Blue")) + scale_alpha(range = c(0.2,0.3))
+
+```
+
+# Multivariate Analysis
+
+### Talk about some of the relationships you observed in this part of the \
+investigation. Were there features that strengthened each other in terms of \
+looking at your feature(s) of interest?
+
+The access method,state and country of origin played an important role in 
+determining the feature of interest. Another relationship observed was the 
+kind of visitor being seasonal or distributed along the year.
+
+
+### Were there any interesting or surprising interactions between features?
+
+An interesting interaction happened to the peak in South American visitors entering
+Brazil only through the southern states. 
+
+### OPTIONAL: Did you create any models with your dataset? Discuss the \
+strengths and limitations of your model.
+
+A model to predict seasonal visitors and how much each state is internationalized
+was created. It has some limitations because of the population source, which is
+is taken every 10 years so is not very accurate. Also, visitors not necessarily
+stay in the state they enter the country, so this is a factor one should always 
+pay attention to.
+
+------
+
+# Final Plots and Summary
+
+### Plot One
+```{r echo=FALSE,fig.width=11, fig.height=8, Plot_One}
+ggplot(arrivals %>% filter(Access == 'Aérea' & Continent == 'Europa' & Arrivals > 0) %>% 
+group_by(Country,Year,State) %>% summarise(Arrivals = sum(Arrivals)) ,aes(Country,State)) + 
+geom_point(aes(colour=Arrivals/100000, size=Year)) + 
+   scale_size(range = c(12,3))+
+theme(axis.text.x = element_text(angle=90)) + scale_color_gradient(low = 'blue',high = 'red') +
+ggtitle('Arrivals from Europe by Air') + labs(colour='Arrivals(Millions)',
+size='Years before 2015')
+```
+
+```{r echo=FALSE,fig.width=11, fig.height=5, Plot_One_2}
+ggplot(arrivals %>% filter(Access == 'Terrestre' & Continent == 'Europa' & Arrivals > 0) %>% 
+         group_by(Country,Year,State) %>% summarise(Arrivals = sum(Arrivals)) ,
+       aes(Country,State)) + geom_point(aes(colour=Arrivals/100000, size=Year))  + 
+  scale_size(range = c(12,3)) + theme(axis.text.x = element_text(angle=90)) + 
+  scale_color_gradient(low = 'blue',high = 'red') + 
+  ggtitle('Arrivals from Europe by Land') + labs(colour='Arrivals(Millions)',
+                                                 size='Years before 2015')
+```
+
+
+
+### Description One
+This plot is composed of two graphs. It shows all arrivals from Europe, and it was
+chosen because despite South American visitors being in greater numbers, they
+are very similar to Brazilian culturally. So, the foreign continent with largest
+visitors is Europe.
+
+The two graphs correlates which european countries come to each Brazilian state
+using two access methods: by air and by land. Also, it has a way to use color to
+show both how many visitors are coming, so we can compare which country has the
+most visitors, but also how it is changing over the last 10 years. This is done
+looking at the color region in each circle: the center means year 2015, the outer
+ring means 2005. For an example: a circle with red center and blue outer ring 
+means that in 2015 there was a large number of visitors and in 2005 a small
+number.
+
+Looking at the graph of air arrivals, we notice Sao Paulo and Rio de Janeiro
+are the states with most visitors, and Germany, France, Italy, Portugal and
+Spain the countries that sent most visitors to Brazil. This is achieved by
+looking which row or column has the most red or purple-ish color. By looking
+at the coloration of the rings, we notice a small change from all those countries
+over the years from Sao Paulo to Rio de Janeiro, most noticeable in France and
+Italy. Also, using this same ring color parameter, we notice a decrease in 
+visitors from portuguese visitors to the northeastern states, and that the 
+only state that seem to have an increase in visitors in the last years is
+Rio de Janeiro.
+
+The graph of land entries from Europeans seemed odd to me at first but made sense
+after a few google searches. We notice a massive flux of visitors entering 
+Brazil by land in the state of Parana, and it can be explained by people doing
+road trips, mostly hitchhiking, through all South America (those Europeans have
+no idea of the danger, really...) and a famous route enters Brazil through
+Parana because of Iguazu Falls, the largest waterfall system in the world.
+
+### Plot Two
+```{r echo=FALSE,fig.width=14, fig.height = 14, Plot_Two}
+#Reordering States from Northern to Southern
+arrivals$StateNorthSouth <- factor(arrivals$State,c('Roraima','Amapá','Amazonas',
+'Pará','Maranhão','Piauí','Ceará','Rio Grande do Norte','Tocantins','Paraíba',
+'Pernambuco','Alagoas','Acre','Bahia','Sergipe','Rondônia','Mato Grosso','Goiás',
+'Distrito Federal','Minas Gerais', 'Espírito Santo','Mato Grosso do Sul',
+'Rio de Janeiro','São Paulo','Paraná','Santa Catarina','Rio Grande do Sul'))
+
+#Generates resume of arrivals
+latam_land_arrivals <- arrivals %>% filter(Access == 'Terrestre' &
+Continent == 'América do Sul' & Arrivals > 0 & State != 'Outras Unidades da Federação') %>% 
+  group_by(Country,Year,StateNorthSouth) %>% summarise(Arrivals = sum(Arrivals))
+
+if(!file.exists('latam_land_arrivals_states.csv')){
+  states <- as.data.frame(latam_land_arrivals %>% group_by(StateNorthSouth) %>%
+                            ungroup() %>% distinct(StateNorthSouth))
+  colnames(states) <- "names"
+  geocode_result <- NA
+  for(i in 1:nrow(states)){
+    row <- states[i,"names"]
+    geocode_result$lon <- NA
+    stop_counter <- 0
+    #this will attempt 20 times with a 2 seconds interval. 
+    #If it is not working... it is not working! Try another time!
+    while(is.na(geocode_result$lon) & stop_counter < 20){
+      geocode_result <- geocode(iconv(paste(row," Brasil"), "ISO_8859-2", "UTF-8"),
+      output="latlon")   
+      #had to do this iconv because of latin characters, otherwise would use as.character
+      stop_counter <- stop_counter + 1
+      Sys.sleep(2)
+    }
+    if(!is.na(geocode_result$lon)){
+      states[i,2] <- as.numeric(geocode_result$lon)
+      states[i,3] <- as.numeric(geocode_result$lat)}
+    else{stop()}
+    
+  }
+  colnames(states) <- c("names","state_lon","state_lat")
+  write.csv(states, file='latam_land_arrivals_states.csv',row.names = FALSE)} else {
+  
+  states <- read.csv('latam_land_arrivals_states.csv',sep = ',',fileEncoding="latin1")
+}
+
+if(!file.exists('latam_land_arrivals_countries.csv')){
+  countries <- as.data.frame(latam_land_arrivals %>% ungroup() %>% distinct(Country))
+  colnames(countries) <- "names"
+  geocode_result <- NA
+  for(i in 1:nrow(countries)){
+    row_value <- iconv(countries[i,"names"], "ISO_8859-2", "UTF-8")
+    geocode_result$lon <- NA
+    stop_counter <- 0
+    #this will attempt 20 times with a 2 seconds interval. 
+    #If it is not working... it is not working! Try another time!
+    while(is.na(geocode_result$lon) & stop_counter < 20){
+      geocode_result <- geocode(row_value,output="latlon")   
+      #had to do this iconv because of latin characters, otherwise would use as.character
+      stop_counter <- stop_counter + 1
+      Sys.sleep(2)
+    }
+    if(!is.na(geocode_result$lon)){
+      countries[i,2] <- as.numeric(geocode_result$lon)
+      countries[i,3] <- as.numeric(geocode_result$lat)}
+    else{stop()}
+}
+colnames(countries) <- c("names","country_lon","country_lat")
+write.csv(countries, file='latam_land_arrivals_countries.csv',row.names = FALSE)} else {
+  countries <- read.csv('latam_land_arrivals_countries.csv',sep = ',',fileEncoding="latin1")
+}
+
+latam_land_arrivals <- merge(latam_land_arrivals,states,by.x="StateNorthSouth",by.y="names")
+latam_land_arrivals <- merge(latam_land_arrivals,countries,by.x="Country",by.y="names")
+
+map <- get_googlemap('Bolivia',zoom = 4,maptype='roadmap')
+ggmap(map) + geom_segment(data = latam_land_arrivals,aes(x=country_lon,y=country_lat,
+xend=state_lon,yend=state_lat,colour=Year,size=Arrivals/100000,alpha=Arrivals/2500000),
+lineend="round")+ scale_colour_gradient(low = "blue", high = "red") + 
+ggtitle('Arrivals from South America per State by Land') + 
+  labs(size='Arrivals(Millions)',Year='Year') + guides(alpha=FALSE)+ 
+  scale_alpha(range = c(0.1,0.3))
+
+```
+
+
+
+### Description Two
+
+This plot is interesting because it might indicate how different the south is
+in terms of integration with the rest of South America. The vast majority of
+entries happen on the three southern most states, and this has important social
+and economical results in those regions.
+
+It is also possible to notice that the north state of Roraima and Acre started 
+receiving visitors recently. Google could not answer why it happened, so by looking
+at our data, we don´t have registries previous to 2014, what suggest the government
+probably used to put them in the "Other Federation States" category (yes, that level
+of chaos is called Brazilian government).
+
+### Plot Three
+```{r echo=FALSE,fig.width=16, fig.height = 10, Plot_Three}
+#Reordering States from Nothern to Southern
+arrivals$StateNorthSouth <- factor(arrivals$State,c('Roraima','Amapá','Amazonas',
+'Pará','Maranhão','Piauí','Ceará','Rio Grande do Norte','Tocantins','Paraíba',
+'Pernambuco','Alagoas','Acre','Bahia','Sergipe','Rondônia','Mato Grosso','Goiás',
+'Distrito Federal','Minas Gerais', 'Espírito Santo','Mato Grosso do Sul',
+'Rio de Janeiro','São Paulo','Paraná','Santa Catarina','Rio Grande do Sul'))
+
+world_season_arrivals <- arrivals %>% filter( Arrivals > 0 & State != 
+'Outras Unidades da Federação' & Country != 'Outros países' & Country != 
+'Países não especificados') %>% group_by(Access,Year,StateNorthSouth,Month.Number) %>% 
+  summarise(Arrivals = sum(Arrivals))
+
+if(!file.exists('world_season_arrivals_states.csv')){
+  states <- as.data.frame(world_season_arrivals %>% group_by(StateNorthSouth) %>% 
+                            ungroup() %>% distinct(StateNorthSouth))
+  colnames(states) <- "names"
+  geocode_result <- NA
+  for(i in 1:nrow(states)){
+    row <- states[i,"names"]
+    geocode_result$lon <- NA
+    stop_counter <- 0
+    #this will attempt 20 times with a 2 seconds interval. If it is not working... 
+    #it is not working! Try another time!
+    while(is.na(geocode_result$lon) & stop_counter < 20){
+      geocode_result <- geocode(iconv(paste(row," Brasil"), "ISO_8859-2", "UTF-8"),
+                      output="latlon")   
+#had to do this iconv because of latin characters, otherwise would use as.character
+      stop_counter <- stop_counter + 1
+      Sys.sleep(2)
+    }
+    if(!is.na(geocode_result$lon)){
+      states[i,2] <- as.numeric(geocode_result$lon)
+      states[i,3] <- as.numeric(geocode_result$lat)}
+    else{stop()}
+    
+  }
+  colnames(states) <- c("names","state_lon","state_lat")
+  write.csv(states, file='world_season_arrivals_states.csv',row.names = FALSE)} else {
+  
+  states <- read.csv('world_season_arrivals_states.csv',sep = ',',
+                     fileEncoding="latin1")
+}
+
+#reads table with population info
+population <- read.csv("population.csv",sep=",",fileEncoding = "latin1",
+                       header = TRUE)
+colnames(population) <- c("State",seq(2005,2015,1))
+population <- melt(population, id.vars="State",measure.vars = as.character(seq(2005,2015,1)))
+colnames(population) <- c("State","Year","Population")
+
+world_season_arrivals <- merge(world_season_arrivals,states,by.x="StateNorthSouth",
+                               by.y="names")
+world_season_arrivals <- merge(world_season_arrivals,population,
+                        by.x=c("StateNorthSouth","Year"),by.y=c("State","Year"))
+world_season_arrivals$Percentage <- 
+  (world_season_arrivals$Arrivals / world_season_arrivals$Population ) * 100
+world_season_arrivals$Season <- 
+  cut(as.numeric(world_season_arrivals$Month.Number),breaks =c(0,3,10,12) ,
+      labels = c("Hot","Cold","Hot2"))
+world_season_arrivals$Season <- 
+  gsub('Hot2','Hot',world_season_arrivals$Season)
+
+map1 <- get_googlemap('Goias',zoom = 4,maptype='roadmap')
+ggmap(map1) + geom_jitter(data = world_season_arrivals,
+aes(x=state_lon,y=state_lat,size=Percentage,alpha=0.1,colour=Season),
+width = 0.15,height = 0.15)+ scale_size_area(max_size = 10) +
+ggtitle('Arrivals Worldwide per State per Season from 2005 to 2015, divided by Access Method') + 
+labs(size='Arrivals as Percentage of State Population') + guides(alpha=FALSE) + 
+scale_color_manual(values = c("Hot"="Red","Cold"="Blue")) + 
+scale_alpha(range = c(0.2,0.3)) + facet_wrap(~Access, ncol = 2)
+
+
+```
+```{r echo=FALSE,fig.width=16, fig.height = 10, Plot_Three_2}
+world_season_arrivals <- world_season_arrivals %>% ungroup() %>% 
+group_by(StateNorthSouth,Year,Month.Number,state_lon,state_lat,Population,Season) %>% 
+  summarise(Arrivals = sum(Arrivals))
+world_season_arrivals$Percentage <- 
+  (world_season_arrivals$Arrivals / world_season_arrivals$Population ) * 100
+map2 <- get_googlemap('Goias',zoom = 4,maptype='roadmap')
+
+ggmap(map2) + geom_jitter(data = world_season_arrivals,
+aes(x=state_lon,y=state_lat,size=Percentage,alpha=0.1,colour=Season),
+width = 0.15,height = 0.15)+ scale_size_area(max_size = 20) +
+ggtitle('Arrivals Worldwide per State per Season from 2005 to 2015') + 
+labs(size='Arrivals as Percentage of State Population') + 
+  guides(alpha=FALSE) + scale_color_manual(values = c("Hot"="Red","Cold"="Blue")) + 
+  scale_alpha(range = c(0.2,0.3))
+
+```
+
+
+### Description Three
+
+Those two graphs are a model to represent which states receives the most international
+visitors as a percentage of the state population. This is measured by the size of
+the the dots. Other thing measured is which state is more subject to seasonality,
+which is was measured dividing the months of the year in hot ones from October
+to March and cold ones being the rest. The dots also have alpha in their color,
+which means theh are a bit transparent, and since manhy will be printed on top
+of each other, if we see a red predominant color it means most visits happened
+in the hot months, if the color is blue then it was in the cold months, and if
+it is purple there os no seasonality and they are distributed.
+
+Some surprises happened here because I expected a bigger seasonality for Rio de
+Janeiro and not such a big one for Mato Grosso do Sul and Rio Grande do Sul.
+
+Another weird surprise happened in Amazonas, which seem to receive more visitors
+in the cold months, by a very slight difference.
+
+------
+
+# Reflection
+
+A key point of this whole work was finding out how the lack of a decent road
+system in Brazil affects the whole south american continent. The huge difference
+between visitors on southern states and northern states is easily explained after
+a few google searches on the quality of roads on northern states. This could be
+one of the possible answers to the why so many visitors from Bolivia, Venezuela
+and Colombia come all the way south to Mato Grosso do Sul to enter Brazil by
+Land. Another option involve illegal recreational chemical substances and the 
+largest city of Brazil being Sao Paulo (which places Mato Grosso in the middle), 
+but let´s  presume the inocence of our esteemed anonymous visitors who cannot even 
+defend themselves with a nice excuse in this report, right?
+
+Learning how to work with google maps was a bit difficult at first, and to be 
+honest some aspects of it are still a mistery: building routes, getting time
+estimates, and even if any integration with street view is possible, for an example.
+But overall it was a rewarding experience.
