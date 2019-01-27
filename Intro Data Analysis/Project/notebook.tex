@@ -1,0 +1,1541 @@
+
+% Default to the notebook output style
+
+    
+
+
+% Inherit from the specified cell style.
+
+
+
+
+    
+\documentclass[11pt]{article}
+
+    
+    
+    \usepackage[T1]{fontenc}
+    % Nicer default font (+ math font) than Computer Modern for most use cases
+    \usepackage{mathpazo}
+
+    % Basic figure setup, for now with no caption control since it's done
+    % automatically by Pandoc (which extracts ![](path) syntax from Markdown).
+    \usepackage{graphicx}
+    % We will generate all images so they have a width \maxwidth. This means
+    % that they will get their normal width if they fit onto the page, but
+    % are scaled down if they would overflow the margins.
+    \makeatletter
+    \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth
+    \else\Gin@nat@width\fi}
+    \makeatother
+    \let\Oldincludegraphics\includegraphics
+    % Set max figure width to be 80% of text width, for now hardcoded.
+    \renewcommand{\includegraphics}[1]{\Oldincludegraphics[width=.8\maxwidth]{#1}}
+    % Ensure that by default, figures have no caption (until we provide a
+    % proper Figure object with a Caption API and a way to capture that
+    % in the conversion process - todo).
+    \usepackage{caption}
+    \DeclareCaptionLabelFormat{nolabel}{}
+    \captionsetup{labelformat=nolabel}
+
+    \usepackage{adjustbox} % Used to constrain images to a maximum size 
+    \usepackage{xcolor} % Allow colors to be defined
+    \usepackage{enumerate} % Needed for markdown enumerations to work
+    \usepackage{geometry} % Used to adjust the document margins
+    \usepackage{amsmath} % Equations
+    \usepackage{amssymb} % Equations
+    \usepackage{textcomp} % defines textquotesingle
+    % Hack from http://tex.stackexchange.com/a/47451/13684:
+    \AtBeginDocument{%
+        \def\PYZsq{\textquotesingle}% Upright quotes in Pygmentized code
+    }
+    \usepackage{upquote} % Upright quotes for verbatim code
+    \usepackage{eurosym} % defines \euro
+    \usepackage[mathletters]{ucs} % Extended unicode (utf-8) support
+    \usepackage[utf8x]{inputenc} % Allow utf-8 characters in the tex document
+    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    \usepackage{grffile} % extends the file name processing of package graphics 
+                         % to support a larger range 
+    % The hyperref package gives us a pdf with properly built
+    % internal navigation ('pdf bookmarks' for the table of contents,
+    % internal cross-reference links, web links for URLs, etc.)
+    \usepackage{hyperref}
+    \usepackage{longtable} % longtable support required by pandoc >1.10
+    \usepackage{booktabs}  % table support for pandoc > 1.12.2
+    \usepackage[inline]{enumitem} % IRkernel/repr support (it uses the enumerate* environment)
+    \usepackage[normalem]{ulem} % ulem is needed to support strikethroughs (\sout)
+                                % normalem makes italics be italics, not underlines
+    
+
+    
+    
+    % Colors for the hyperref package
+    \definecolor{urlcolor}{rgb}{0,.145,.698}
+    \definecolor{linkcolor}{rgb}{.71,0.21,0.01}
+    \definecolor{citecolor}{rgb}{.12,.54,.11}
+
+    % ANSI colors
+    \definecolor{ansi-black}{HTML}{3E424D}
+    \definecolor{ansi-black-intense}{HTML}{282C36}
+    \definecolor{ansi-red}{HTML}{E75C58}
+    \definecolor{ansi-red-intense}{HTML}{B22B31}
+    \definecolor{ansi-green}{HTML}{00A250}
+    \definecolor{ansi-green-intense}{HTML}{007427}
+    \definecolor{ansi-yellow}{HTML}{DDB62B}
+    \definecolor{ansi-yellow-intense}{HTML}{B27D12}
+    \definecolor{ansi-blue}{HTML}{208FFB}
+    \definecolor{ansi-blue-intense}{HTML}{0065CA}
+    \definecolor{ansi-magenta}{HTML}{D160C4}
+    \definecolor{ansi-magenta-intense}{HTML}{A03196}
+    \definecolor{ansi-cyan}{HTML}{60C6C8}
+    \definecolor{ansi-cyan-intense}{HTML}{258F8F}
+    \definecolor{ansi-white}{HTML}{C5C1B4}
+    \definecolor{ansi-white-intense}{HTML}{A1A6B2}
+
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+    % Add ',fontsize=\small' for more characters per line
+    \newenvironment{Shaded}{}{}
+    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+    \newcommand{\RegionMarkerTok}[1]{{#1}}
+    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\NormalTok}[1]{{#1}}
+    
+    % Additional commands for more recent versions of Pandoc
+    \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
+    \newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
+    \newcommand{\ImportTok}[1]{{#1}}
+    \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
+    \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
+    \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
+    \newcommand{\BuiltInTok}[1]{{#1}}
+    \newcommand{\ExtensionTok}[1]{{#1}}
+    \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
+    \newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
+    \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    
+    
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatability definitions
+    \def\gt{>}
+    \def\lt{<}
+    % Document parameters
+    \title{Internet Users Worldwide}
+    
+    
+    
+
+    % Pygments definitions
+    
+\makeatletter
+\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
+    \let\PY@ul=\relax \let\PY@tc=\relax%
+    \let\PY@bc=\relax \let\PY@ff=\relax}
+\def\PY@tok#1{\csname PY@tok@#1\endcsname}
+\def\PY@toks#1+{\ifx\relax#1\empty\else%
+    \PY@tok{#1}\expandafter\PY@toks\fi}
+\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
+    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
+\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
+
+\expandafter\def\csname PY@tok@gd\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@gu\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@gt\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\expandafter\def\csname PY@tok@gs\endcsname{\let\PY@bf=\textbf}
+\expandafter\def\csname PY@tok@gr\endcsname{\def\PY@tc##1{\textcolor[rgb]{1.00,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@cm\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@vg\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@vi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@vm\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@mh\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@cs\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@ge\endcsname{\let\PY@it=\textit}
+\expandafter\def\csname PY@tok@vc\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@il\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@go\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.53,0.53,0.53}{##1}}}
+\expandafter\def\csname PY@tok@cp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.74,0.48,0.00}{##1}}}
+\expandafter\def\csname PY@tok@gi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.63,0.00}{##1}}}
+\expandafter\def\csname PY@tok@gh\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@ni\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.60,0.60,0.60}{##1}}}
+\expandafter\def\csname PY@tok@nl\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.63,0.63,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nn\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@no\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@na\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.49,0.56,0.16}{##1}}}
+\expandafter\def\csname PY@tok@nb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nc\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@nd\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\expandafter\def\csname PY@tok@ne\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.82,0.25,0.23}{##1}}}
+\expandafter\def\csname PY@tok@nf\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@si\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.53}{##1}}}
+\expandafter\def\csname PY@tok@s2\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@nt\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nv\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@s1\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@dl\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@ch\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@m\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@gp\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@sh\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@ow\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\expandafter\def\csname PY@tok@sx\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@bp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@c1\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@fm\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@o\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@kc\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@c\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@mf\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@err\endcsname{\def\PY@bc##1{\setlength{\fboxsep}{0pt}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}
+\expandafter\def\csname PY@tok@mb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@ss\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@sr\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.53}{##1}}}
+\expandafter\def\csname PY@tok@mo\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@kd\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@mi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@kn\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@cpf\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@kr\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@s\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@kp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@w\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\expandafter\def\csname PY@tok@kt\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
+\expandafter\def\csname PY@tok@sc\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sa\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@k\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@se\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sd\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+
+\def\PYZbs{\char`\\}
+\def\PYZus{\char`\_}
+\def\PYZob{\char`\{}
+\def\PYZcb{\char`\}}
+\def\PYZca{\char`\^}
+\def\PYZam{\char`\&}
+\def\PYZlt{\char`\<}
+\def\PYZgt{\char`\>}
+\def\PYZsh{\char`\#}
+\def\PYZpc{\char`\%}
+\def\PYZdl{\char`\$}
+\def\PYZhy{\char`\-}
+\def\PYZsq{\char`\'}
+\def\PYZdq{\char`\"}
+\def\PYZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYZat{@}
+\def\PYZlb{[}
+\def\PYZrb{]}
+\makeatother
+
+
+    % Exact colors from NB
+    \definecolor{incolor}{rgb}{0.0, 0.0, 0.5}
+    \definecolor{outcolor}{rgb}{0.545, 0.0, 0.0}
+
+
+
+    
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy 
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true,  % so long urls are correctly broken across lines
+      colorlinks=true,
+      urlcolor=urlcolor,
+      linkcolor=linkcolor,
+      citecolor=citecolor,
+      }
+    % Slightly bigger margins than the latex defaults
+    
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+    
+    
+
+    \begin{document}
+    
+    
+    \maketitle
+    
+    
+
+    
+    \section{Project: Internet Users
+Worldwide}\label{project-internet-users-worldwide}
+
+\subsubsection{by Alexandre Shimono}\label{by-alexandre-shimono}
+
+\subsection{Table of Contents}\label{table-of-contents}
+
+Introduction
+
+Data Wrangling
+
+Exploratory Data Analysis
+
+Conclusions
+
+    \subsection{Introduction}\label{introduction}
+
+The main idea behind studying the usage of internet around the world is
+simply to better understand distribution of access and possibly make
+some projections. Basically we have only three dimensions on this
+dataset: the Country name, the Year, and the total number of persons
+with internet access. Based on this data it is possible to calculate an
+extra field of growth rate, which can be expressed as a percentage.
+Having such variations on our hands, we can answer some questions like
+what was the biggest internet growth from one year to another in one
+country in total number of users, or even if there has ever been a
+decrease in the number of users in any country (maybe due to some war,
+the arab spring, crysis in Syria?) at any given point.
+
+Data was taken from https://www.gapminder.org/data/
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}77}]:} \PY{c+c1}{\PYZsh{} Use this cell to set up import statements for all of the packages that you}
+         \PY{c+c1}{\PYZsh{}   plan to use.}
+         
+         \PY{c+c1}{\PYZsh{} Remember to include a \PYZsq{}magic word\PYZsq{} so that your visualizations are plotted}
+         \PY{c+c1}{\PYZsh{}   inline with the notebook. See this page for more:}
+         \PY{c+c1}{\PYZsh{}   http://ipython.readthedocs.io/en/stable/interactive/magics.html}
+         
+         \PY{k+kn}{import} \PY{n+nn}{pandas} \PY{k+kn}{as} \PY{n+nn}{pd}
+         \PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k+kn}{as} \PY{n+nn}{np}
+         \PY{k+kn}{import} \PY{n+nn}{matplotlib.pyplot} \PY{k+kn}{as} \PY{n+nn}{plt}
+         \PY{k+kn}{import} \PY{n+nn}{seaborn} \PY{k+kn}{as} \PY{n+nn}{sns}
+         \PY{o}{\PYZpc{}} \PY{n}{matplotlib} \PY{n}{inline}
+\end{Verbatim}
+
+
+     \#\# Data Wrangling
+
+We will be using Pandas Dataframes for this analysis.
+
+\subsubsection{General Properties}\label{general-properties}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}78}]:} \PY{c+c1}{\PYZsh{} Load your data and print out a few lines. Perform operations to inspect data}
+         \PY{c+c1}{\PYZsh{}   types and look for instances of missing or possibly errant data.}
+         \PY{n}{internet\PYZus{}users} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{read\PYZus{}excel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Internet user total.xlsx}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{internet\PYZus{}users}\PY{o}{.}\PY{n}{head}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}78}]:}   Internet users, total number  1990  1991  1992  1993        1994  \textbackslash{}
+         0                  Afghanistan   0.0   NaN   NaN   NaN         NaN   
+         1                      Albania   0.0   NaN   NaN   NaN         NaN   
+         2                      Algeria   0.0   NaN   NaN   NaN  100.090832   
+         3               American Samoa   0.0   NaN   NaN   NaN         NaN   
+         4                      Andorra   0.0   NaN   NaN   NaN         NaN   
+         
+                  1995         1996         1997         1998  {\ldots}            2002  \textbackslash{}
+         0         NaN          NaN          NaN          NaN  {\ldots}     1123.920517   
+         1  350.820117  1002.157509  1502.476346  2002.216783  {\ldots}    12052.645369   
+         2  500.465235   500.469039  3002.798156  6005.526744  {\ldots}   500441.425787   
+         3         NaN          NaN          NaN          NaN  {\ldots}             NaN   
+         4         NaN   995.756049  1979.716334  4424.113974  {\ldots}     7774.565416   
+         
+                     2003          2004          2005          2006          2007  \textbackslash{}
+         0   22569.277533  2.824412e+04  3.380450e+05  5.988651e+05  5.537710e+05   
+         1   30194.039918  7.563375e+04  1.898870e+05  3.033497e+05  4.765945e+05   
+         2  700615.293472  1.501387e+06  1.921982e+06  2.462986e+06  3.204578e+06   
+         3            NaN           NaN           NaN           NaN           NaN   
+         4    9780.916489  2.020683e+04  2.929038e+04  3.908782e+04  5.768109e+04   
+         
+                    2008          2009        2010  2011  
+         0  5.490559e+05  1.085510e+06  1256469.72   NaN  
+         1  7.590813e+05  1.315402e+06  1441927.80   NaN  
+         2  3.504773e+06  3.924904e+06  4433526.00   NaN  
+         3           NaN           NaN         NaN   NaN  
+         4  5.783693e+04  6.571155e+04    68739.84   NaN  
+         
+         [5 rows x 23 columns]
+\end{Verbatim}
+            
+    We notice that some lines have only NaN values, which makes no sense.
+Those should be removed. Also, we notice that some nations do not have
+values for old dates, which makes sense since the internet started
+rising globally according to Wikipedia (not as a research tool between
+Universities) just since early 90s. For this reason, I will choose the
+year 2001 as a reference, and if the country has a NaN value the entire
+line will be removed. Afterward, all NaN values will be replaced by
+zeroes. We will also rename the index column to "Country".
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}79}]:} \PY{n}{internet\PYZus{}users} \PY{o}{=} \PY{n}{internet\PYZus{}users}\PY{p}{[}\PY{n}{np}\PY{o}{.}\PY{n}{isfinite}\PY{p}{(}\PY{n}{internet\PYZus{}users}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{2001}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}\PY{p}{]}
+         \PY{n}{internet\PYZus{}users}\PY{o}{.}\PY{n}{fillna}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{inplace}\PY{o}{=}\PY{n+nb+bp}{True}\PY{p}{)}
+         \PY{n}{internet\PYZus{}users} \PY{o}{=} \PY{n}{internet\PYZus{}users}\PY{o}{.}\PY{n}{rename}\PY{p}{(}\PY{n}{columns}\PY{o}{=}\PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Internet users, total number}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Country}\PY{l+s+s1}{\PYZsq{}}\PY{p}{\PYZcb{}}\PY{p}{)}
+         \PY{n}{internet\PYZus{}users}\PY{o}{.}\PY{n}{head}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}79}]:}                Country  1990  1991  1992  1993        1994         1995  \textbackslash{}
+         0          Afghanistan   0.0   0.0   0.0   0.0    0.000000     0.000000   
+         1              Albania   0.0   0.0   0.0   0.0    0.000000   350.820117   
+         2              Algeria   0.0   0.0   0.0   0.0  100.090832   500.465235   
+         5               Angola   0.0   0.0   0.0   0.0    0.000000     0.000000   
+         6  Antigua and Barbuda   0.0   0.0   0.0   0.0    0.000000  1510.651721   
+         
+                   1996         1997         1998  {\ldots}            2002           2003  \textbackslash{}
+         0     0.000000     0.000000     0.000000  {\ldots}     1123.920517   22569.277533   
+         1  1002.157509  1502.476346  2002.216783  {\ldots}    12052.645369   30194.039918   
+         2   500.469039  3002.798156  6005.526744  {\ldots}   500441.425787  700615.293472   
+         5    96.624245   725.799034  2424.499171  {\ldots}    40260.379005   57158.963169   
+         6  2013.777727  2517.193852  3020.806471  {\ldots}    10063.375000   14078.562638   
+         
+                    2004          2005          2006          2007          2008  \textbackslash{}
+         0  2.824412e+04  3.380450e+05  5.988651e+05  5.537710e+05  5.490559e+05   
+         1  7.563375e+04  1.898870e+05  3.033497e+05  4.765945e+05  7.590813e+05   
+         2  1.501387e+06  1.921982e+06  2.462986e+06  3.204578e+06  3.504773e+06   
+         5  7.417261e+04  1.885300e+05  3.244978e+05  5.608117e+05  8.297463e+05   
+         6  2.010192e+04  2.913262e+04  5.321297e+04  6.020606e+04  6.518681e+04   
+         
+                    2009        2010  2011  
+         0  1.085510e+06  1256469.72   0.0  
+         1  1.315402e+06  1441927.80   0.0  
+         2  3.924904e+06  4433526.00   0.0  
+         5  1.113307e+06  1908191.20   0.0  
+         6  6.514908e+04    70968.00   0.0  
+         
+         [5 rows x 23 columns]
+\end{Verbatim}
+            
+    Now, we can have a more general view of the whole dataset with the
+describe function:
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}80}]:} \PY{n}{internet\PYZus{}users}\PY{o}{.}\PY{n}{describe}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}80}]:}                1990          1991          1992          1993          1994  \textbackslash{}
+         count  1.960000e+02  1.960000e+02  1.960000e+02  1.960000e+02  1.960000e+02   
+         mean   1.340288e+04  2.185336e+04  3.495840e+04  5.044544e+04  1.030947e+05   
+         std    1.424906e+05  2.137989e+05  3.205830e+05  4.275411e+05  9.213485e+05   
+         min    0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00   
+         25\%    0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00   
+         50\%    0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00   
+         75\%    0.000000e+00  0.000000e+00  0.000000e+00  9.366564e+02  4.467333e+03   
+         max    1.988024e+06  2.975535e+06  4.453200e+06  5.924598e+06  1.281192e+07   
+         
+                        1995          1996          1997          1998          1999  \textbackslash{}
+         count  1.960000e+02  1.960000e+02  1.960000e+02  1.960000e+02  1.960000e+02   
+         mean   1.984319e+05  3.694079e+05  5.921310e+05  9.231412e+05  1.388812e+06   
+         std    1.768884e+06  3.191477e+06  4.324240e+06  6.129312e+06  7.656223e+06   
+         min    0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00   
+         25\%    0.000000e+00  1.532582e+02  7.825498e+02  1.988207e+03  4.968147e+03   
+         50\%    3.504101e+02  2.000100e+03  4.992679e+03  1.014368e+04  2.813967e+04   
+         75\%    1.952791e+04  4.411411e+04  8.699426e+04  1.501114e+05  2.450025e+05   
+         max    2.460056e+07  4.423269e+07  5.893568e+07  8.305303e+07  1.001255e+08   
+         
+                {\ldots}            2002          2003          2004          2005  \textbackslash{}
+         count  {\ldots}    1.960000e+02  1.960000e+02  1.960000e+02  1.960000e+02   
+         mean   {\ldots}    3.306814e+06  3.872760e+06  4.503447e+06  5.135800e+06   
+         std    {\ldots}    1.421755e+07  1.562491e+07  1.728795e+07  1.872051e+07   
+         min    {\ldots}    0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00   
+         25\%    {\ldots}    2.441795e+04  3.006752e+04  3.670026e+04  4.923302e+04   
+         50\%    {\ldots}    1.235731e+05  1.529147e+05  2.126868e+05  3.392482e+05   
+         75\%    {\ldots}    1.040248e+06  1.406971e+06  1.866206e+06  2.622681e+06   
+         max    {\ldots}    1.695767e+08  1.797180e+08  1.904301e+08  2.017430e+08   
+         
+                        2006          2007          2008          2009          2010  \textbackslash{}
+         count  1.960000e+02  1.960000e+02  1.960000e+02  1.960000e+02  1.960000e+02   
+         mean   5.786826e+06  6.900786e+06  7.974482e+06  9.010653e+06  1.029808e+07   
+         std    2.016719e+07  2.453651e+07  2.902002e+07  3.386430e+07  3.906940e+07   
+         min    0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00   
+         25\%    6.745723e+04  8.333297e+04  1.026825e+05  1.123229e+05  1.481696e+05   
+         50\%    4.836016e+05  5.793525e+05  7.880628e+05  9.252343e+05  1.293429e+06   
+         75\%    3.076977e+06  3.391346e+06  4.237466e+06  4.594224e+06  5.170963e+06   
+         max    2.064934e+08  2.267134e+08  3.001903e+08  3.857886e+08  4.600780e+08   
+         
+                 2011  
+         count  196.0  
+         mean     0.0  
+         std      0.0  
+         min      0.0  
+         25\%      0.0  
+         50\%      0.0  
+         75\%      0.0  
+         max      0.0  
+         
+         [8 rows x 22 columns]
+\end{Verbatim}
+            
+    \subsubsection{Data Cleaning (Replace this with more specific
+notes!)}\label{data-cleaning-replace-this-with-more-specific-notes}
+
+    There is something odd about the year 2011: all values are zeroes. It
+seems this whole column should be removed.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}81}]:} \PY{n}{internet\PYZus{}users} \PY{o}{=} \PY{n}{internet\PYZus{}users}\PY{o}{.}\PY{n}{drop}\PY{p}{(}\PY{n}{columns}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{2011}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+         \PY{n}{internet\PYZus{}users}\PY{o}{.}\PY{n}{head}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}81}]:}                Country  1990  1991  1992  1993        1994         1995  \textbackslash{}
+         0          Afghanistan   0.0   0.0   0.0   0.0    0.000000     0.000000   
+         1              Albania   0.0   0.0   0.0   0.0    0.000000   350.820117   
+         2              Algeria   0.0   0.0   0.0   0.0  100.090832   500.465235   
+         5               Angola   0.0   0.0   0.0   0.0    0.000000     0.000000   
+         6  Antigua and Barbuda   0.0   0.0   0.0   0.0    0.000000  1510.651721   
+         
+                   1996         1997         1998     {\ldots}               2001  \textbackslash{}
+         0     0.000000     0.000000     0.000000     {\ldots}        1118.180665   
+         1  1002.157509  1502.476346  2002.216783     {\ldots}       10026.047580   
+         2   500.469039  3002.798156  6005.526744     {\ldots}      200180.427339   
+         5    96.624245   725.799034  2424.499171     {\ldots}       19570.007120   
+         6  2013.777727  2517.193852  3020.806471     {\ldots}        7045.119378   
+         
+                     2002           2003          2004          2005          2006  \textbackslash{}
+         0    1123.920517   22569.277533  2.824412e+04  3.380450e+05  5.988651e+05   
+         1   12052.645369   30194.039918  7.563375e+04  1.898870e+05  3.033497e+05   
+         2  500441.425787  700615.293472  1.501387e+06  1.921982e+06  2.462986e+06   
+         5   40260.379005   57158.963169  7.417261e+04  1.885300e+05  3.244978e+05   
+         6   10063.375000   14078.562638  2.010192e+04  2.913262e+04  5.321297e+04   
+         
+                    2007          2008          2009        2010  
+         0  5.537710e+05  5.490559e+05  1.085510e+06  1256469.72  
+         1  4.765945e+05  7.590813e+05  1.315402e+06  1441927.80  
+         2  3.204578e+06  3.504773e+06  3.924904e+06  4433526.00  
+         5  5.608117e+05  8.297463e+05  1.113307e+06  1908191.20  
+         6  6.020606e+04  6.518681e+04  6.514908e+04    70968.00  
+         
+         [5 rows x 22 columns]
+\end{Verbatim}
+            
+    It seems odd that the description of the dataset from the source says
+"Internet users, total number", but numbers do not have integer values.
+How is it possible to have a fraction of a human being? After looking at
+the original source (apparently, gapminder is a hub of data), it seems
+the total number of internet users per country is in fact the product of
+the percentage of internet users by the population of the country. So,
+in order to make more sense, it seems another function will have to be
+applied to round the number up.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}82}]:} \PY{n}{columns} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+         \PY{k}{for} \PY{n}{year} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{1990}\PY{p}{,}\PY{l+m+mi}{2011}\PY{p}{)}\PY{p}{:}
+             \PY{n}{columns}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n+nb}{str}\PY{p}{(}\PY{n}{year}\PY{p}{)}\PY{p}{)}
+         \PY{n}{internet} \PY{o}{=} \PY{n}{internet\PYZus{}users}\PY{p}{[}\PY{n}{columns}\PY{p}{]}\PY{o}{.}\PY{n}{applymap}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{int64}\PY{p}{)}
+         \PY{n}{internet}\PY{o}{.}\PY{n}{insert}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{column}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Country}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{value}\PY{o}{=}\PY{n}{internet\PYZus{}users}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Country}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+         \PY{n}{internet}\PY{o}{.}\PY{n}{set\PYZus{}index}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Country}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{inplace}\PY{o}{=}\PY{n+nb+bp}{True}\PY{p}{)}
+         \PY{n}{internet\PYZus{}users} \PY{o}{=} \PY{n}{internet}
+         \PY{n}{internet\PYZus{}users}\PY{o}{.}\PY{n}{head}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}82}]:}                      1990  1991  1992  1993  1994  1995  1996  1997  1998  \textbackslash{}
+         Country                                                                     
+         Afghanistan             0     0     0     0     0     0     0     0     0   
+         Albania                 0     0     0     0     0   350  1002  1502  2002   
+         Algeria                 0     0     0     0   100   500   500  3002  6005   
+         Angola                  0     0     0     0     0     0    96   725  2424   
+         Antigua and Barbuda     0     0     0     0     0  1510  2013  2517  3020   
+         
+                               1999   {\ldots}       2001    2002    2003     2004     2005  \textbackslash{}
+         Country                      {\ldots}                                                
+         Afghanistan              0   {\ldots}       1118    1123   22569    28244   338045   
+         Albania               2502   {\ldots}      10026   12052   30194    75633   189886   
+         Algeria              60054   {\ldots}     200180  500441  700615  1501386  1921981   
+         Angola                9723   {\ldots}      19570   40260   57158    74172   188529   
+         Antigua and Barbuda   4027   {\ldots}       7045   10063   14078    20101    29132   
+         
+                                 2006     2007     2008     2009     2010  
+         Country                                                           
+         Afghanistan           598865   553770   549055  1085510  1256469  
+         Albania               303349   476594   759081  1315401  1441927  
+         Algeria              2462985  3204577  3504773  3924903  4433526  
+         Angola                324497   560811   829746  1113306  1908191  
+         Antigua and Barbuda    53212    60206    65186    65149    70968  
+         
+         [5 rows x 21 columns]
+\end{Verbatim}
+            
+    So now it seems we have nice data and we are ready to start our
+investigation!
+
+     \#\# Exploratory Data Analysis
+
+So, first thing we could do to analyze our data is to get a nice
+overview of maximum and minimuns. Let's start by getting a list of which
+country had the max and min values in each year.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}83}]:} \PY{n}{internet\PYZus{}users}\PY{o}{.}\PY{n}{apply}\PY{p}{(}\PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{n}{x}\PY{o}{.}\PY{n}{idxmax}\PY{p}{(}\PY{p}{)}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}83}]:} 1990    United States
+         1991    United States
+         1992    United States
+         1993    United States
+         1994    United States
+         1995    United States
+         1996    United States
+         1997    United States
+         1998    United States
+         1999    United States
+         2000    United States
+         2001    United States
+         2002    United States
+         2003    United States
+         2004    United States
+         2005    United States
+         2006    United States
+         2007    United States
+         2008            China
+         2009            China
+         2010            China
+         dtype: object
+\end{Verbatim}
+            
+    So far we have our first interesting observation about the data:
+American leadership was taken out by China in 2008 in terms of absolute
+numbers, which is understandable considering the size of chinese
+poupulation.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}84}]:} \PY{n}{internet\PYZus{}users}\PY{o}{.}\PY{n}{apply}\PY{p}{(}\PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{n}{x}\PY{o}{.}\PY{n}{idxmin}\PY{p}{(}\PY{p}{)}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}84}]:} 1990         Afghanistan
+         1991         Afghanistan
+         1992         Afghanistan
+         1993         Afghanistan
+         1994         Afghanistan
+         1995         Afghanistan
+         1996         Afghanistan
+         1997         Afghanistan
+         1998         Afghanistan
+         1999         Afghanistan
+         2000         Afghanistan
+         2001    Korea, Dem. Rep.
+         2002           Australia
+         2003           Australia
+         2004           Australia
+         2005             Belarus
+         2006              Guyana
+         2007              Guyana
+         2008    Korea, Dem. Rep.
+         2009             Eritrea
+         2010                Guam
+         dtype: object
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}85}]:} \PY{n}{internet\PYZus{}users}\PY{o}{.}\PY{n}{min}\PY{p}{(}\PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}85}]:} 1990    0
+         1991    0
+         1992    0
+         1993    0
+         1994    0
+         1995    0
+         1996    0
+         1997    0
+         1998    0
+         1999    0
+         2000    0
+         2001    0
+         2002    0
+         2003    0
+         2004    0
+         2005    0
+         2006    0
+         2007    0
+         2008    0
+         2009    0
+         2010    0
+         dtype: int64
+\end{Verbatim}
+            
+    It is weird to see Australia in the list with lowest internet access,
+but what seems to be happening is that the country apparently is missing
+data for those years. The same must be happening to all countries that
+had internet internet access in any previous year and had a zero value
+in any subsequent time.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}86}]:} \PY{n}{internet\PYZus{}users}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{list\PYZus{}countries\PYZus{}min\PYZus{}values\PYZus{}to\PYZus{}check}\PY{p}{]}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}86}]:}            1990  1991  1992  1993  1994  1995  1996  1997  1998  1999  {\ldots}    \textbackslash{}
+         Country                                                                {\ldots}     
+         Kiribati      0     0     0     0     0     0     0     0   499   999  {\ldots}     
+         Tonga         0     0     0     0     0   118   157   493   741   991  {\ldots}     
+         Samoa         0     0     0     0     0     0     0   299   399   499  {\ldots}     
+         Gibraltar     0     0     0     0     0     0     0   725  1137  1615  {\ldots}     
+         Vanuatu       0     0     0     0     0     0    97   244   487   975  {\ldots}     
+         
+                    2001  2002  2003  2004   2005   2006   2007   2008   2009   2010  
+         Country                                                                      
+         Kiribati   1999  2178  2663  3163   3679   4209   5702   6757   7842   8959  
+         Tonga      2782  2879  2975  3963   4953   5946   7341   8346  10351  12486  
+         Samoa      3002  4006  5015  5526   6042   8078   8610   9147  10944  12815  
+         Gibraltar  5846  6625  8047  9468  11359  13243  15119  16986  19037  19008  
+         Vanuatu    5365  6828  7805  9757  10732  12681  15121  16576  17534  19172  
+         
+         [5 rows x 21 columns]
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}87}]:} \PY{n}{list\PYZus{}countries\PYZus{}min\PYZus{}values\PYZus{}to\PYZus{}check} \PY{o}{=} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Australia}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Afghanistan}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Korea, Dem. Rep.}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Belarus}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Guyana}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Eritrea}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Guam}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+         \PY{n}{transposed\PYZus{}internet\PYZus{}users} \PY{o}{=} \PY{n}{internet\PYZus{}users}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{list\PYZus{}countries\PYZus{}min\PYZus{}values\PYZus{}to\PYZus{}check}\PY{p}{]}\PY{o}{.}\PY{n}{transpose}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{14}\PY{p}{,}\PY{l+m+mi}{8}\PY{p}{)}\PY{p}{,}\PY{n}{title}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Countries with minimum values in at least one year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{transposed\PYZus{}internet\PYZus{}users}\PY{o}{.}\PY{n}{set}\PY{p}{(}\PY{n}{xlabel}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Years}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{ylabel}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Numbers of Internet Users (Tenths of Millions)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_22_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    So it seems we might have two possible alternatives. First is to fill
+those missing gaps with some sort of approximation of the value
+expected. For this we probably would have to make a function to
+calculate those values. Second would be to try to remove the 0 values
+for those specific points and try to force matplot to smooth the graph.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}88}]:} \PY{n}{internet\PYZus{}users}\PY{o}{.}\PY{n}{at}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Australia}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{2002}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{=}\PY{n+nb+bp}{None}
+         \PY{n}{internet\PYZus{}users}\PY{o}{.}\PY{n}{at}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Australia}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{2003}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{=}\PY{n+nb+bp}{None}
+         \PY{n}{internet\PYZus{}users}\PY{o}{.}\PY{n}{at}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Australia}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{2004}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{=}\PY{n+nb+bp}{None}
+         \PY{n}{transposed\PYZus{}internet\PYZus{}users} \PY{o}{=} \PY{n}{internet\PYZus{}users}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{list\PYZus{}countries\PYZus{}min\PYZus{}values\PYZus{}to\PYZus{}check}\PY{p}{]}\PY{o}{.}\PY{n}{transpose}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{14}\PY{p}{,}\PY{l+m+mi}{8}\PY{p}{)}\PY{p}{,}\PY{n}{title}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Countries with minimum values in at least one year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{transposed\PYZus{}internet\PYZus{}users}\PY{o}{.}\PY{n}{set}\PY{p}{(}\PY{n}{xlabel}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Years}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{ylabel}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Numbers of Internet Users (Tenths of Millions)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_24_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    It seems it does not perform such task automatically, so we have to
+force it somehow. After some Google research, found out that in fact my
+mistake was to manually set all those values to zero in the beginning.
+Instead, I should have removed the NaN values with the dropna()
+function. So let's start it over.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}89}]:} \PY{n}{internet\PYZus{}users} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{read\PYZus{}excel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Internet user total.xlsx}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{internet\PYZus{}users} \PY{o}{=} \PY{n}{internet\PYZus{}users}\PY{p}{[}\PY{n}{np}\PY{o}{.}\PY{n}{isfinite}\PY{p}{(}\PY{n}{internet\PYZus{}users}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{2001}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}\PY{p}{]}
+         \PY{n}{internet\PYZus{}users} \PY{o}{=} \PY{n}{internet\PYZus{}users}\PY{o}{.}\PY{n}{rename}\PY{p}{(}\PY{n}{columns}\PY{o}{=}\PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Internet users, total number}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Country}\PY{l+s+s1}{\PYZsq{}}\PY{p}{\PYZcb{}}\PY{p}{)}
+         \PY{n}{internet\PYZus{}users} \PY{o}{=} \PY{n}{internet\PYZus{}users}\PY{o}{.}\PY{n}{drop}\PY{p}{(}\PY{n}{columns}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{2011}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+         \PY{n}{internet} \PY{o}{=} \PY{n}{internet\PYZus{}users}\PY{o}{.}\PY{n}{fillna}\PY{p}{(}\PY{n}{value}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{)}
+         \PY{n}{internet} \PY{o}{=} \PY{n}{internet}\PY{o}{.}\PY{n}{round}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{)}
+         \PY{n}{internet\PYZus{}users} \PY{o}{=} \PY{n}{internet}\PY{p}{[}\PY{n}{internet\PYZus{}users}\PY{o}{.}\PY{n}{notna}\PY{p}{(}\PY{p}{)}\PY{p}{]}
+         \PY{c+c1}{\PYZsh{}internet\PYZus{}users = internet\PYZus{}users.fillna(value=\PYZsq{}\PYZsq{})}
+         \PY{n}{internet\PYZus{}users}\PY{o}{.}\PY{n}{set\PYZus{}index}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Country}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{drop}\PY{o}{=}\PY{n+nb+bp}{True}\PY{p}{,} \PY{n}{inplace}\PY{o}{=}\PY{n+nb+bp}{True}\PY{p}{)}
+         \PY{n}{internet\PYZus{}users}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}89}]:}                              1990       1991       1992       1993  \textbackslash{}
+         Country                                                              
+         Afghanistan                   0.0        NaN        NaN        NaN   
+         Albania                       0.0        NaN        NaN        NaN   
+         Algeria                       0.0        NaN        NaN        NaN   
+         Angola                        0.0        NaN        NaN        NaN   
+         Antigua and Barbuda           0.0        NaN        NaN        NaN   
+         Argentina                     0.0        NaN     1004.0    10034.0   
+         Armenia                       0.0        NaN        NaN        NaN   
+         Aruba                         0.0        NaN        NaN        NaN   
+         Australia                100029.0   190043.0   310055.0   350047.0   
+         Austria                   10000.0    20000.0    50000.0    60000.0   
+         Azerbaijan                    0.0        NaN        NaN        NaN   
+         Bahamas                       0.0        NaN        NaN        NaN   
+         Bahrain                       0.0        NaN        NaN        NaN   
+         Bangladesh                    0.0        NaN        NaN        NaN   
+         Barbados                      0.0        NaN        NaN        NaN   
+         Belarus                       0.0        NaN        NaN        NaN   
+         Belgium                     100.0     2003.0    10009.0    20009.0   
+         Benin                         0.0        NaN        NaN        NaN   
+         Bermuda                       0.0        NaN        NaN        NaN   
+         Bhutan                        0.0        NaN        NaN        NaN   
+         Bolivia                       0.0        NaN        NaN        NaN   
+         Bosnia and Herzegovina        0.0        NaN        NaN        NaN   
+         Botswana                      0.0        0.0        NaN        NaN   
+         Brazil                        0.0     5003.0    20013.0    40029.0   
+         Brunei                        0.0        NaN        NaN        NaN   
+         Bulgaria                      0.0        NaN        NaN      200.0   
+         Burkina Faso                  0.0        NaN        NaN        NaN   
+         Burundi                       0.0        0.0        0.0        0.0   
+         Cambodia                      0.0        NaN        NaN        NaN   
+         Cameroon                      0.0        NaN        NaN        NaN   
+         {\ldots}                           {\ldots}        {\ldots}        {\ldots}        {\ldots}   
+         Sudan                         0.0        NaN        NaN        NaN   
+         Suriname                      0.0        NaN        NaN        NaN   
+         Swaziland                     0.0        NaN        NaN        NaN   
+         Sweden                    50000.0    99999.0   129995.0   149991.0   
+         Switzerland               39756.0    79530.0   119374.0   149352.0   
+         Syria                         0.0        0.0        0.0        0.0   
+         Tajikistan                    0.0        NaN        NaN        NaN   
+         Tanzania                      0.0        NaN        NaN        NaN   
+         Thailand                      0.0       30.0      200.0     7968.0   
+         Togo                          0.0        0.0        0.0        0.0   
+         Tonga                         0.0        NaN        NaN        NaN   
+         Trinidad and Tobago           0.0        NaN        NaN        NaN   
+         Tunisia                       0.0        NaN        NaN        NaN   
+         Turkey                        0.0        NaN        NaN     4818.0   
+         Turkmenistan                  0.0        NaN        NaN        NaN   
+         Uganda                        0.0        NaN        NaN        NaN   
+         Ukraine                       0.0        NaN        NaN      401.0   
+         United Arab Emirates          0.0        NaN        NaN        NaN   
+         United Kingdom            49980.0    99956.0   149920.0   299807.0   
+         United States           1988024.0  2975535.0  4453200.0  5924598.0   
+         Uruguay                       0.0        NaN        NaN        NaN   
+         Uzbekistan                    0.0        NaN        NaN        NaN   
+         Vanuatu                       0.0        NaN        NaN        NaN   
+         Venezuela                     0.0        NaN     2493.0     8776.0   
+         Vietnam                       0.0        NaN        NaN        NaN   
+         Virgin Islands (U.S.)         0.0        NaN        NaN        NaN   
+         West Bank and Gaza            0.0        NaN        NaN        NaN   
+         Yemen, Rep.                   0.0        NaN        NaN        NaN   
+         Zambia                        0.0        NaN        NaN        NaN   
+         Zimbabwe                      0.0        NaN        NaN        NaN   
+         
+                                       1994        1995        1996        1997  \textbackslash{}
+         Country                                                                  
+         Afghanistan                    NaN         NaN         NaN         NaN   
+         Albania                        NaN       351.0      1002.0      1502.0   
+         Algeria                      100.0       500.0       500.0      3003.0   
+         Angola                         NaN         NaN        97.0       726.0   
+         Antigua and Barbuda            NaN      1511.0      2014.0      2517.0   
+         Argentina                  15044.0     30072.0     50092.0    100123.0   
+         Armenia                      300.0      1700.0      3000.0      3500.0   
+         Aruba                          NaN         NaN      2300.0         NaN   
+         Australia                 400033.0    500006.0    600014.0   3032449.0   
+         Austria                   110000.0    150000.0    550001.0    760006.0   
+         Azerbaijan                   110.0       160.0       499.0      1993.0   
+         Bahamas                        NaN      2686.0      4956.0      3915.0   
+         Bahrain                        NaN      1936.0      4848.0      9762.0   
+         Bangladesh                     NaN         NaN         NaN       919.0   
+         Barbados                       NaN        20.0      1029.0      2077.0   
+         Belarus                       50.0       300.0      3001.0      5002.0   
+         Belgium                    70000.0     99958.0    299756.0    499407.0   
+         Benin                          NaN         NaN        99.0      1476.0   
+         Bermuda                        NaN      4199.0      9997.0     14995.0   
+         Bhutan                         NaN         NaN         NaN         NaN   
+         Bolivia                        NaN      4991.0     14976.0     34951.0   
+         Bosnia and Herzegovina         NaN         NaN       500.0      2000.0   
+         Botswana                       NaN      1023.0      2557.0      5110.0   
+         Brazil                     60050.0    170164.0    740838.0   1311724.0   
+         Brunei                         NaN      2946.0      9817.0     14721.0   
+         Bulgaria                    1650.0     10000.0     60000.0    100000.0   
+         Burkina Faso                   NaN         NaN       106.0      2112.0   
+         Burundi                        0.0         0.0        49.0       493.0   
+         Cambodia                       NaN         NaN         NaN       686.0   
+         Cameroon                       NaN         NaN         NaN       990.0   
+         {\ldots}                            {\ldots}         {\ldots}         {\ldots}         {\ldots}   
+         Sudan                          0.0         0.0         0.0       391.0   
+         Suriname                       NaN       500.0      1000.0      4493.0   
+         Swaziland                      NaN        10.0       496.0       892.0   
+         Sweden                    299985.0    450000.0    800125.0   2100857.0   
+         Switzerland               189346.0    249305.0    321250.0   1070663.0   
+         Syria                          0.0         0.0         0.0      4844.0   
+         Tajikistan                     NaN         NaN         NaN         NaN   
+         Tanzania                       NaN         NaN       499.0      2496.0   
+         Thailand                   22831.0     44633.0     69581.0    219680.0   
+         Togo                           0.0         0.0       460.0      9183.0   
+         Tonga                          NaN       118.0       158.0       493.0   
+         Trinidad and Tobago            NaN      1995.0      4988.0     14963.0   
+         Tunisia                      650.0      1000.0      2500.0      4000.0   
+         Turkey                     28880.0     48087.0    115292.0    287927.0   
+         Turkmenistan                   NaN         NaN         NaN         NaN   
+         Uganda                         NaN       596.0       993.0      2283.0   
+         Ukraine                     7009.0     22025.0     50053.0    100093.0   
+         United Arab Emirates           NaN      2418.0      9287.0     86068.0   
+         United Kingdom            599560.0   1099145.0   2398186.0   4307074.0   
+         United States           12811919.0  24600557.0  44232691.0  58935678.0   
+         Uruguay                     1999.0      9997.0     59978.0    109954.0   
+         Uzbekistan                     NaN       350.0      1000.0      2503.0   
+         Vanuatu                        NaN         NaN        98.0       244.0   
+         Venezuela                  11968.0     26930.0     55857.0     89773.0   
+         Vietnam                        NaN         NaN       101.0      3031.0   
+         Virgin Islands (U.S.)       1000.0      2999.0      4998.0      7497.0   
+         West Bank and Gaza             NaN         NaN         NaN         NaN   
+         Yemen, Rep.                    NaN         NaN        98.0      2438.0   
+         Zambia                       589.0       783.0       831.0       879.0   
+         Zimbabwe                     199.0       898.0      1997.0      3998.0   
+         
+                                       1998         1999     {\ldots}              2001  \textbackslash{}
+         Country                                             {\ldots}                     
+         Afghanistan                    NaN          NaN     {\ldots}            1118.0   
+         Albania                     2002.0       2502.0     {\ldots}           10026.0   
+         Algeria                     6006.0      60055.0     {\ldots}          200180.0   
+         Angola                      2424.0       9723.0     {\ldots}           19570.0   
+         Antigua and Barbuda         3021.0       4028.0     {\ldots}            7045.0   
+         Argentina                 300195.0    1200184.0     {\ldots}         3648448.0   
+         Armenia                     4000.0      30002.0     {\ldots}           50006.0   
+         Aruba                          NaN       3985.0     {\ldots}           15794.0   
+         Australia                5772823.0    7727668.0     {\ldots}        10212333.0   
+         Austria                  1230014.0    1840018.0     {\ldots}         3149915.0   
+         Azerbaijan                  2990.0       7977.0     {\ldots}           25030.0   
+         Bahamas                     6787.0      11067.0     {\ldots}           35590.0   
+         Bahrain                    19671.0      29586.0     {\ldots}           96625.0   
+         Bangladesh                  4599.0      46014.0     {\ldots}          171275.0   
+         Barbados                    5240.0       6339.0     {\ldots}           32013.0   
+         Belarus                     7503.0      50020.0     {\ldots}          430483.0   
+         Belgium                   798809.0    1397655.0     {\ldots}         3194941.0   
+         Benin                       2947.0       9805.0     {\ldots}           24427.0   
+         Bermuda                    19993.0      24989.0     {\ldots}           29984.0   
+         Bhutan                         NaN        764.0     {\ldots}            5084.0   
+         Bolivia                    49939.0      79908.0     {\ldots}          179745.0   
+         Bosnia and Herzegovina      5000.0       7000.0     {\ldots}           45000.0   
+         Botswana                   10214.0      19397.0     {\ldots}           61222.0   
+         Brazil                   2503664.0    3505320.0     {\ldots}         8009872.0   
+         Brunei                     19622.0      24521.0     {\ldots}           43190.0   
+         Bulgaria                  150001.0     234602.0     {\ldots}          605007.0   
+         Burkina Faso                5279.0       7384.0     {\ldots}           19951.0   
+         Burundi                      986.0       2463.0     {\ldots}            6890.0   
+         Cambodia                    1957.0       3908.0     {\ldots}            9738.0   
+         Cameroon                    1979.0      19778.0     {\ldots}           44438.0   
+         {\ldots}                            {\ldots}          {\ldots}     {\ldots}               {\ldots}   
+         Sudan                       1564.0       2935.0     {\ldots}           49068.0   
+         Suriname                    7585.0       8711.0     {\ldots}           14508.0   
+         Swaziland                    989.0       4934.0     {\ldots}           13778.0   
+         Sweden                   2962762.0    3667832.0     {\ldots}         4595249.0   
+         Switzerland              1764011.0    2426492.0     {\ldots}         3971601.0   
+         Syria                       9681.0      19356.0     {\ldots}           58211.0   
+         Tajikistan                     NaN       2002.0     {\ldots}            3195.0   
+         Tanzania                    2994.0      24941.0     {\ldots}           59813.0   
+         Thailand                  672850.0    1514185.0     {\ldots}         3550430.0   
+         Togo                       13752.0      27456.0     {\ldots}          136739.0   
+         Tonga                        742.0        992.0     {\ldots}            2782.0   
+         Trinidad and Tobago        34916.0      74822.0     {\ldots}          199533.0   
+         Tunisia                    10001.0     150033.0     {\ldots}          410303.0   
+         Turkey                    431461.0    1436989.0     {\ldots}         3349546.0   
+         Turkmenistan                   NaN       2003.0     {\ldots}            7975.0   
+         Uganda                     14879.0      24784.0     {\ldots}           59449.0   
+         Ukraine                   150117.0     200123.0     {\ldots}          600158.0   
+         United Arab Emirates      190358.0     432896.0     {\ldots}          827413.0   
+         United Kingdom           7995303.0   12493278.0     {\ldots}        19786366.0   
+         United States           83053031.0  100125498.0     {\ldots}       140147752.0   
+         Uruguay                   229893.0     329828.0     {\ldots}          369767.0   
+         Uzbekistan                  5008.0       7509.0     {\ldots}          149646.0   
+         Vanuatu                      488.0        976.0     {\ldots}            5365.0   
+         Venezuela                 324191.0     678327.0     {\ldots}         1150224.0   
+         Vietnam                    10073.0     100422.0     {\ldots}         1007834.0   
+         Virgin Islands (U.S.)       9997.0      11996.0     {\ldots}           19979.0   
+         West Bank and Gaza             NaN          NaN     {\ldots}           60339.0   
+         Yemen, Rep.                 3899.0       9745.0     {\ldots}           16586.0   
+         Zambia                      2927.0      14625.0     {\ldots}           24362.0   
+         Zimbabwe                   10012.0      20056.0     {\ldots}          100581.0   
+         
+                                        2002         2003         2004         2005  \textbackslash{}
+         Country                                                                      
+         Afghanistan                  1124.0      22569.0      28244.0     338045.0   
+         Albania                     12053.0      30194.0      75634.0     189887.0   
+         Algeria                    500441.0     700615.0    1501387.0    1921982.0   
+         Angola                      40260.0      57159.0      74173.0     188530.0   
+         Antigua and Barbuda         10063.0      14079.0      20102.0      29133.0   
+         Argentina                 4097919.0    4527354.0    6148589.0    6854530.0   
+         Armenia                     60009.0     140027.0     150038.0     161054.0   
+         Aruba                       17784.0      20150.0      22781.0      25653.0   
+         Australia                       NaN          NaN          NaN   12854218.0   
+         Austria                   2955166.0    3473318.0    4443118.0    4774674.0   
+         Azerbaijan                 413989.0          NaN          NaN     689641.0   
+         Bahamas                     55044.0      62040.0      69243.0      79840.0   
+         Bahrain                    115898.0     139496.0     144151.0     154411.0   
+         Bangladesh                 187866.0     223717.0     275931.0     339713.0   
+         Barbados                    74828.0     106919.0     134434.0     151673.0   
+         Belarus                    891820.0          NaN          NaN          NaN   
+         Belgium                   4750690.0    5148463.0    5578276.0    6228738.0   
+         Benin                       48770.0      68162.0      87484.0      97027.0   
+         Bermuda                     32982.0      35979.0      38976.0      41971.0   
+         Bhutan                      10156.0      15217.0      20280.0      25364.0   
+         Bolivia                    269533.0     309315.0     398835.0     478149.0   
+         Bosnia and Herzegovina      99995.0     149986.0     584937.0     806363.0   
+         Botswana                    61221.0      61221.0      61215.0      61195.0   
+         Brazil                   16403934.0   23989345.0   35071405.0   39099569.0   
+         Brunei                      52365.0      68342.0     105771.0     132418.0   
+         Bulgaria                   716654.0     943950.0    1412178.0    1545501.0   
+         Burkina Faso                26160.0      50025.0      55200.0      66721.0   
+         Burundi                      7869.0      13765.0      24572.0      39313.0   
+         Cambodia                    29157.0      33937.0      39639.0      42386.0   
+         Cameroon                    59212.0      98623.0     167546.0     246216.0   
+         {\ldots}                             {\ldots}          {\ldots}          {\ldots}          {\ldots}   
+         Sudan                      157404.0     197315.0     296864.0     496277.0   
+         Suriname                    19981.0      22976.0      29969.0      31970.0   
+         Swaziland                   19665.0      26533.0      35370.0      40848.0   
+         Sweden                    6282022.0    7070576.0    7531615.0    7659593.0   
+         Switzerland               4454555.0    4756908.0    4990915.0    5197920.0   
+         Syria                      355051.0     594309.0     778094.0    1044003.0   
+         Tajikistan                   3486.0       4092.0       4952.0      19275.0   
+         Tanzania                    79722.0     249043.0     331609.0    1669734.0   
+         Thailand                  4868421.0    6078800.0    7053467.0   10022117.0   
+         Togo                       181911.0     190546.0     200009.0     216322.0   
+         Tonga                        2880.0       2976.0       3964.0       4953.0   
+         Trinidad and Tobago        286329.0     339208.0     354186.0     381156.0   
+         Tunisia                    506073.0     631052.0     837019.0     957023.0   
+         Turkey                    7447774.0    8179652.0    9802998.0   10534937.0   
+         Turkmenistan                13898.0      19762.0      35416.0      47348.0   
+         Uganda                      99075.0     123844.0     198148.0     495330.0   
+         Ukraine                    900071.0    1499871.0    1649659.0    1759537.0   
+         United Arab Emirates       921614.0    1002533.0    1102215.0    1627740.0   
+         United Kingdom           33515216.0   38635538.0   39295002.0   42141909.0   
+         United States           169576672.0  179718040.0  190430149.0  201742976.0   
+         Uruguay                    379741.0     529611.0     566728.0     667436.0   
+         Uzbekistan                 273461.0     487511.0     666800.0     867554.0   
+         Vanuatu                      6829.0       7805.0       9757.0      10732.0   
+         Venezuela                 1241034.0    1930220.0    2201971.0    3347147.0   
+         Vietnam                   1493286.0    3076281.0    6286874.0   10594671.0   
+         Virgin Islands (U.S.)       29951.0      29931.0      29915.0      29905.0   
+         West Bank and Gaza         104051.0     141243.0     153305.0     569071.0   
+         Yemen, Rep.                 97699.0     117438.0     176475.0     216521.0   
+         Zambia                      51088.0     107248.0     225365.0     326878.0   
+         Zimbabwe                   503600.0     806572.0     826930.0    1007663.0   
+         
+                                        2006         2007         2008         2009  \textbackslash{}
+         Country                                                                      
+         Afghanistan                598865.0     553771.0     549056.0    1085510.0   
+         Albania                    303350.0     476594.0     759081.0    1315402.0   
+         Algeria                   2462986.0    3204578.0    3504773.0    3924904.0   
+         Angola                     324498.0     560812.0     829746.0    1113307.0   
+         Antigua and Barbuda         53213.0      60206.0      65187.0      65149.0   
+         Argentina                 8166600.0   10214688.0   11164731.0   13621240.0   
+         Armenia                    172887.0     185104.0     191211.0     472002.0   
+         Aruba                       28759.0      32206.0      36090.0      40193.0   
+         Australia                13691235.0   14667832.0   15418953.0   16262458.0   
+         Austria                   5261760.0    5764496.0    6078674.0    6147500.0   
+         Azerbaijan                1043526.0    1282575.0    1527567.0    2484249.0   
+         Bahamas                     84257.0      88792.0     105237.0     114636.0   
+         Bahrain                    229174.0     304659.0     546701.0     619876.0   
+         Bangladesh                1423535.0    2591222.0    3636958.0    4557934.0   
+         Barbados                   170769.0     175737.0     181000.0     187379.0   
+         Belarus                   1583845.0    1916461.0    2226559.0    2643159.0   
+         Belgium                   6722851.0    7300198.0    6997430.0    7462657.0   
+         Benin                      121055.0     145215.0     154586.0     192680.0   
+         Bermuda                     44965.0      47958.0      53213.0      53948.0   
+         Bhutan                      30484.0      40764.0      45939.0      51170.0   
+         Bolivia                    577075.0     993596.0    1041680.0    1397602.0   
+         Bosnia and Herzegovina     950025.0    1055106.0    1308125.0    1421924.0   
+         Botswana                    81548.0     101774.0     122176.0     121867.0   
+         Brazil                   52963579.0   58609644.0   64799077.0   75791320.0   
+         Brunei                     156223.0     168673.0     176960.0     192000.0   
+         Bulgaria                  2083091.0    2570191.0    3011477.0    3394203.0   
+         Burkina Faso                92516.0     112958.0     142740.0     180625.0   
+         Burundi                     49151.0      53954.0      64341.0     155246.0   
+         Cambodia                    63303.0      66982.0      70495.0      74083.0   
+         Cameroon                   364127.0     537656.0     637798.0     736321.0   
+         {\ldots}                             {\ldots}          {\ldots}          {\ldots}          {\ldots}   
+         Sudan                     3185731.0    3496357.0    4207779.0          NaN   
+         Suriname                    47965.0      71980.0     108473.0     163028.0   
+         Swaziland                   41313.0      46453.0      78799.0      88794.0   
+         Sweden                    7978004.0    7513243.0    8313185.0    8473110.0   
+         Switzerland               5653541.0    5806685.0    5997978.0    6196045.0   
+         Syria                     1481976.0          NaN    2757196.0    3469298.0   
+         Tajikistan                 246136.0     475361.0     587506.0     683087.0   
+         Tanzania                  2315569.0    2956909.0    3804090.0    4352474.0   
+         Thailand                 11545108.0   13579629.0   12424773.0   13809931.0   
+         Togo                       237786.0     254376.0     277288.0     300995.0   
+         Tonga                        5947.0       7342.0       8347.0      10352.0   
+         Trinidad and Tobago        396175.0     428192.0     463202.0     592003.0   
+         Tunisia                   1300957.0    1732293.0    2821089.0    3531386.0   
+         Turkey                   12597189.0   20038925.0   24376486.0   26152021.0   
+         Turkmenistan                63364.0      68333.0      86072.0      97104.0   
+         Uganda                     742880.0    1114070.0    2475812.0    3165582.0   
+         Ukraine                   2099484.0    3031481.0   10315912.0   15154526.0   
+         United Arab Emirates      2424619.0    3297380.0    4468769.0    5204111.0   
+         United Kingdom           41662350.0   45726882.0   48029802.0   51516674.0   
+         United States           206493364.0  226713423.0  225691907.0  218457578.0   
+         Uruguay                    978271.0    1134080.0    1314965.0    1403389.0   
+         Uzbekistan                1674617.0    1985297.0    2434558.0    4627564.0   
+         Vanuatu                     12682.0      15122.0      16577.0      17534.0   
+         Venezuela                 4130269.0    5747711.0    7261277.0    8898213.0   
+         Vietnam                  14506873.0   17643674.0   20559697.0   23072261.0   
+         Virgin Islands (U.S.)       29902.0      29906.0      29914.0      29921.0   
+         West Bank and Gaza         669699.0     789496.0     932070.0    1266856.0   
+         Yemen, Rep.                265638.0    1099544.0    1558972.0    2323490.0   
+         Zambia                     488794.0     587097.0     687068.0     802868.0   
+         Zimbabwe                  1226884.0    1354215.0    1419476.0    1417045.0   
+         
+                                        2010  
+         Country                              
+         Afghanistan               1256470.0  
+         Albania                   1441928.0  
+         Algeria                   4433526.0  
+         Angola                    1908191.0  
+         Antigua and Barbuda         70968.0  
+         Argentina                14548455.0  
+         Armenia                   1360512.0  
+         Aruba                       45145.0  
+         Australia                16923972.0  
+         Austria                   6102179.0  
+         Azerbaijan                4226380.0  
+         Bahamas                    147437.0  
+         Bahrain                    694009.0  
+         Bangladesh                5501609.0  
+         Barbados                   191878.0  
+         Belarus                   3041748.0  
+         Belgium                   8034050.0  
+         Benin                      277002.0  
+         Bermuda                     54687.0  
+         Bhutan                      98728.0  
+         Bolivia                   1985970.0  
+         Bosnia and Herzegovina    1955277.0  
+         Botswana                   120417.0  
+         Brazil                   79245740.0  
+         Brunei                     199460.0  
+         Bulgaria                  3464630.0  
+         Burkina Faso               230562.0  
+         Burundi                    176040.0  
+         Cambodia                   178142.0  
+         Cameroon                   783956.0  
+         {\ldots}                             {\ldots}  
+         Sudan                           NaN  
+         Suriname                   165733.0  
+         Swaziland                   95122.0  
+         Sweden                    8441718.0  
+         Switzerland               6430363.0  
+         Syria                     4224995.0  
+         Tajikistan                 794483.0  
+         Tanzania                  4932535.0  
+         Thailand                 14653914.0  
+         Togo                       324296.0  
+         Tonga                       12487.0  
+         Trinidad and Tobago        650611.0  
+         Tunisia                   3856984.0  
+         Turkey                   28969976.0  
+         Turkmenistan               110924.0  
+         Uganda                    4178085.0  
+         Ukraine                  20451748.0  
+         United Arab Emirates      5859118.0  
+         United Kingdom           52730234.0  
+         United States           229684122.0  
+         Uruguay                   1606911.0  
+         Uzbekistan                5488940.0  
+         Vanuatu                     19172.0  
+         Venezuela                10337115.0  
+         Vietnam                  24211031.0  
+         Virgin Islands (U.S.)           NaN  
+         West Bank and Gaza        1512273.0  
+         Yemen, Rep.               2970485.0  
+         Zambia                    1308857.0  
+         Zimbabwe                  1445717.0  
+         
+         [196 rows x 21 columns]
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}90}]:} \PY{n}{internet\PYZus{}users}\PY{o}{.}\PY{n}{min}\PY{p}{(}\PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}90}]:} 1990       0.0
+         1991       0.0
+         1992       0.0
+         1993       0.0
+         1994       0.0
+         1995       0.0
+         1996       0.0
+         1997       0.0
+         1998       0.0
+         1999       0.0
+         2000       0.0
+         2001       0.0
+         2002       0.0
+         2003       0.0
+         2004       0.0
+         2005       0.0
+         2006       0.0
+         2007       0.0
+         2008       0.0
+         2009       0.0
+         2010    8959.0
+         dtype: float64
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}91}]:} \PY{n}{list\PYZus{}countries\PYZus{}min\PYZus{}values\PYZus{}to\PYZus{}check} \PY{o}{=} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Grenada}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Brazil}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Burundi}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Maldives}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+         \PY{n}{min\PYZus{}values\PYZus{}internet\PYZus{}users} \PY{o}{=} \PY{n}{internet\PYZus{}users}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{list\PYZus{}countries\PYZus{}min\PYZus{}values\PYZus{}to\PYZus{}check}\PY{p}{]}\PY{o}{.}\PY{n}{T}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{14}\PY{p}{,}\PY{l+m+mi}{8}\PY{p}{)}\PY{p}{,}\PY{n}{title}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Countries with minimum values in at least one year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{min\PYZus{}values\PYZus{}internet\PYZus{}users}\PY{o}{.}\PY{n}{set}\PY{p}{(}\PY{n}{xlabel}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Years}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{ylabel}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Numbers of Internet Users (Tenths of Millions)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)} 
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_28_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    We can also see the 5 smallest values in 2010 and see how they behaved
+over the years:
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}92}]:} \PY{n}{internet\PYZus{}users}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{2010}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{sort\PYZus{}values}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{head}\PY{p}{(}\PY{l+m+mi}{5}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}92}]:} Country
+         Kiribati      8959.0
+         Tonga        12487.0
+         Samoa        12816.0
+         Gibraltar    19009.0
+         Vanuatu      19172.0
+         Name: 2010, dtype: float64
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}93}]:} \PY{n}{list\PYZus{}countries\PYZus{}min\PYZus{}values\PYZus{}to\PYZus{}check} \PY{o}{=} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Kiribati}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Tonga}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Samoa}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Gibraltar}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Vanuatu}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+         \PY{n}{min\PYZus{}values\PYZus{}internet\PYZus{}users} \PY{o}{=} \PY{n}{internet\PYZus{}users}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{list\PYZus{}countries\PYZus{}min\PYZus{}values\PYZus{}to\PYZus{}check}\PY{p}{]}\PY{o}{.}\PY{n}{transpose}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{14}\PY{p}{,}\PY{l+m+mi}{8}\PY{p}{)}\PY{p}{,}\PY{n}{title}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Top 5 countries with minimum values in 2010}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{min\PYZus{}values\PYZus{}internet\PYZus{}users}\PY{o}{.}\PY{n}{set}\PY{p}{(}\PY{n}{xlabel}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Years}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{ylabel}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Numbers of Internet Users}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)} 
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_31_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    Also, we can check the top 5 in absolute numbers:
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}94}]:} \PY{n}{internet\PYZus{}users}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{2010}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{sort\PYZus{}values}\PY{p}{(}\PY{n}{ascending}\PY{o}{=}\PY{n+nb+bp}{False}\PY{p}{)}\PY{o}{.}\PY{n}{head}\PY{p}{(}\PY{l+m+mi}{5}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}94}]:} Country
+         China            460077957.0
+         United States    229684122.0
+         Japan             98951089.0
+         India             91846075.0
+         Brazil            79245740.0
+         Name: 2010, dtype: float64
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}95}]:} \PY{n}{list\PYZus{}countries\PYZus{}max\PYZus{}values\PYZus{}to\PYZus{}check} \PY{o}{=} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{United States}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Japan}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Brazil}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{China}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{India}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+         \PY{n}{max\PYZus{}values\PYZus{}internet\PYZus{}users} \PY{o}{=} \PY{n}{internet\PYZus{}users}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{list\PYZus{}countries\PYZus{}max\PYZus{}values\PYZus{}to\PYZus{}check}\PY{p}{]}\PY{o}{.}\PY{n}{transpose}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{14}\PY{p}{,}\PY{l+m+mi}{8}\PY{p}{)}\PY{p}{,}\PY{n}{title}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Top 5 countries with maximum values in 2010}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{max\PYZus{}values\PYZus{}internet\PYZus{}users}\PY{o}{.}\PY{n}{set}\PY{p}{(}\PY{n}{xlabel}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Years}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{ylabel}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Numbers of Internet Users(Hundreds of Millions)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_34_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \subsubsection{Which country had the largest internet
+boom?}\label{which-country-had-the-largest-internet-boom}
+
+    To answer this question we should calculate something like the derivate
+of the graph for each country (Newton and Leibniz say hello) and then
+find the largest value overall. To do this, unfortunatelly, we will have
+to deal with some unpleasant NaN mess which will prevent us from dealing
+with this "pandas style": we will have to use loops and ifs.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}96}]:} \PY{c+c1}{\PYZsh{}first will remove all values that are None in 2010}
+         \PY{n}{internet\PYZus{}users} \PY{o}{=} \PY{n}{internet\PYZus{}users}\PY{p}{[}\PY{n}{np}\PY{o}{.}\PY{n}{isfinite}\PY{p}{(}\PY{n}{internet\PYZus{}users}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{2010}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}\PY{p}{]}
+         \PY{n}{year\PYZus{}list} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+         \PY{n}{year\PYZus{}diff\PYZus{}list} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+         \PY{k}{for} \PY{n}{year} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{1990}\PY{p}{,}\PY{l+m+mi}{2011}\PY{p}{)}\PY{p}{:}
+             \PY{n}{year\PYZus{}list}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n+nb}{str}\PY{p}{(}\PY{n}{year}\PY{p}{)}\PY{p}{)}
+         \PY{k}{for} \PY{n}{year} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{1990}\PY{p}{,}\PY{l+m+mi}{2010}\PY{p}{)}\PY{p}{:}
+             \PY{n}{year\PYZus{}diff\PYZus{}list}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n+nb}{str}\PY{p}{(}\PY{n}{year}\PY{p}{)}\PY{o}{+}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZhy{}}\PY{l+s+s1}{\PYZsq{}}\PY{o}{+}\PY{n+nb}{str}\PY{p}{(}\PY{n}{year}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{)}
+         \PY{n}{internet\PYZus{}users\PYZus{}variation} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{columns}\PY{o}{=}\PY{n}{year\PYZus{}diff\PYZus{}list}\PY{p}{)}
+         \PY{k}{for} \PY{n}{index}\PY{p}{,}\PY{n}{row} \PY{o+ow}{in} \PY{n}{internet\PYZus{}users}\PY{o}{.}\PY{n}{iterrows}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+             \PY{n}{next\PYZus{}row} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+             \PY{n}{i} \PY{o}{=} \PY{l+m+mi}{0}
+             \PY{k}{while} \PY{n}{i} \PY{o}{\PYZlt{}} \PY{n+nb}{len}\PY{p}{(}\PY{n}{year\PYZus{}list}\PY{p}{)}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{:}
+                 \PY{k}{if} \PY{n}{np}\PY{o}{.}\PY{n}{isnan}\PY{p}{(}\PY{n}{row}\PY{p}{[}\PY{n}{year\PYZus{}list}\PY{p}{[}\PY{n}{i}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{]}\PY{p}{)} \PY{o+ow}{and} \PY{o+ow}{not} \PY{n}{np}\PY{o}{.}\PY{n}{isnan}\PY{p}{(}\PY{n}{row}\PY{p}{[}\PY{n}{year\PYZus{}list}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{]}\PY{p}{)} \PY{o+ow}{and} \PY{n}{i} \PY{o}{!=} \PY{l+m+mi}{19}\PY{p}{:}
+                     \PY{n}{k}\PY{o}{=}\PY{l+m+mi}{2}
+                     \PY{n}{stop} \PY{o}{=} \PY{n+nb+bp}{False}
+                     \PY{c+c1}{\PYZsh{}print(\PYZsq{}Entered in \PYZsq{}+index+\PYZsq{} with an i of \PYZsq{} + str(i))}
+                     \PY{k}{while} \PY{n}{k}\PY{o}{+}\PY{n}{i} \PY{o}{\PYZlt{}} \PY{n+nb}{len}\PY{p}{(}\PY{n}{year\PYZus{}list}\PY{p}{)} \PY{o+ow}{and} \PY{o+ow}{not} \PY{n}{stop}\PY{p}{:}
+                         \PY{c+c1}{\PYZsh{}print(\PYZsq{}First loop in \PYZsq{}+index+\PYZsq{} with an k of \PYZsq{}+str(k))}
+                         \PY{k}{if} \PY{o+ow}{not} \PY{n}{np}\PY{o}{.}\PY{n}{isnan}\PY{p}{(}\PY{n}{row}\PY{p}{[}\PY{n}{year\PYZus{}list}\PY{p}{[}\PY{n}{i}\PY{o}{+}\PY{n}{k}\PY{p}{]}\PY{p}{]}\PY{p}{)}\PY{p}{:}
+                             \PY{c+c1}{\PYZsh{}print(\PYZsq{}Found non None in \PYZsq{}+index+\PYZsq{} in column number \PYZsq{}+str(i+k))}
+                             \PY{n}{stop} \PY{o}{=} \PY{n+nb+bp}{True}
+                             \PY{n}{diff} \PY{o}{=} \PY{p}{(}\PY{n}{row}\PY{p}{[}\PY{n}{year\PYZus{}list}\PY{p}{[}\PY{n}{i}\PY{o}{+}\PY{n}{k}\PY{p}{]}\PY{p}{]} \PY{o}{\PYZhy{}} \PY{n}{row}\PY{p}{[}\PY{n}{year\PYZus{}list}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{]}\PY{p}{)}\PY{o}{/}\PY{n}{k}
+                             \PY{n}{j}\PY{o}{=}\PY{l+m+mi}{1}
+                             \PY{k}{while} \PY{n}{j}\PY{o}{\PYZlt{}}\PY{o}{=}\PY{n}{k}\PY{p}{:}
+                                 \PY{c+c1}{\PYZsh{}print(\PYZsq{}Second loop in \PYZsq{}+index+\PYZsq{} with an j of \PYZsq{}+str(j)+\PYZsq{} appending \PYZsq{}+str(j*diff))}
+                                 \PY{n}{next\PYZus{}row}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{j}\PY{o}{*}\PY{n}{diff}\PY{p}{)}
+                                 \PY{n}{j}\PY{o}{+}\PY{o}{=}\PY{l+m+mi}{1}
+                         \PY{k}{else}\PY{p}{:}
+                             \PY{n}{k} \PY{o}{+}\PY{o}{=} \PY{l+m+mi}{1}
+                     \PY{n}{i} \PY{o}{+}\PY{o}{=} \PY{n}{k}
+                     \PY{c+c1}{\PYZsh{}print(\PYZsq{}Value of i at the end of the first loop is \PYZsq{}+ str(i))}
+                     
+                 \PY{k}{else}\PY{p}{:}
+                     \PY{c+c1}{\PYZsh{}print(\PYZsq{}Adding simple difference with i of \PYZsq{}+str(i))}
+                     \PY{n}{next\PYZus{}row}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{row}\PY{p}{[}\PY{n}{year\PYZus{}list}\PY{p}{[}\PY{n}{i}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{]}\PY{o}{\PYZhy{}}\PY{n}{row}\PY{p}{[}\PY{n}{year\PYZus{}list}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{]}\PY{p}{)}
+                     \PY{n}{i} \PY{o}{+}\PY{o}{=} \PY{l+m+mi}{1}
+             \PY{c+c1}{\PYZsh{}print(len(next\PYZus{}row))}
+             \PY{c+c1}{\PYZsh{}print(index)}
+             \PY{c+c1}{\PYZsh{}print(len(year\PYZus{}diff\PYZus{}list))}
+             \PY{c+c1}{\PYZsh{}print(len(next\PYZus{}row))}
+             \PY{c+c1}{\PYZsh{}print(\PYZsq{}Appending row to \PYZsq{}+index)}
+             \PY{n}{internet\PYZus{}users\PYZus{}variation}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{index}\PY{p}{]} \PY{o}{=} \PY{n}{next\PYZus{}row}
+         \PY{n}{internet\PYZus{}users\PYZus{}variation}\PY{o}{.}\PY{n}{head}\PY{p}{(}\PY{l+m+mi}{10}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}96}]:}                         1990-1991      1991-1992     1992-1993     1993-1994  \textbackslash{}
+         Afghanistan            101.636364     203.272727    304.909091    406.545455   
+         Albania                 70.200000     140.400000    210.600000    280.800000   
+         Algeria                 25.000000      50.000000     75.000000    100.000000   
+         Angola                  16.166667      32.333333     48.500000     64.666667   
+         Antigua and Barbuda    302.200000     604.400000    906.600000   1208.800000   
+         Argentina              502.000000    1004.000000   9030.000000   5010.000000   
+         Armenia                 75.000000     150.000000    225.000000    300.000000   
+         Aruba                  383.333333     766.666667   1150.000000   1533.333333   
+         Australia            90014.000000  120012.000000  39992.000000  49986.000000   
+         Austria              10000.000000   30000.000000  10000.000000  50000.000000   
+         
+                                 1994-1995      1995-1996     1996-1997     1997-1998  \textbackslash{}
+         Afghanistan            508.181818     609.818182  7.114545e+02  8.130909e+02   
+         Albania                351.000000     651.000000  5.000000e+02  5.000000e+02   
+         Algeria                400.000000       0.000000  2.503000e+03  3.003000e+03   
+         Angola                  80.833333      97.000000  6.290000e+02  1.698000e+03   
+         Antigua and Barbuda   1511.000000     503.000000  5.030000e+02  5.040000e+02   
+         Argentina            15028.000000   20020.000000  5.003100e+04  2.000720e+05   
+         Armenia               1400.000000    1300.000000  5.000000e+02  5.000000e+02   
+         Aruba                 1916.666667    2300.000000  5.616667e+02  1.123333e+03   
+         Australia            99973.000000  100008.000000  2.432435e+06  2.740374e+06   
+         Austria              40000.000000  400001.000000  2.100050e+05  4.700080e+05   
+         
+                                 1998-1999     1999-2000  2000-2001  2001-2002  \textbackslash{}
+         Afghanistan          9.147273e+02  1.016364e+03     1118.0       6.00   
+         Albania              5.000000e+02  1.003000e+03     6521.0    2027.00   
+         Algeria              5.404900e+04  9.008200e+04    50043.0  300261.00   
+         Angola               7.299000e+03  4.906000e+03     4941.0   20690.00   
+         Antigua and Barbuda  1.007000e+03  1.006000e+03     2011.0    3018.00   
+         Argentina            8.999890e+05  1.399252e+06  1049012.0  449471.00   
+         Armenia              2.600200e+04  1.000200e+04    10002.0   10003.00   
+         Aruba                1.685000e+03  9.955000e+03     1854.0    1990.00   
+         Australia            1.954845e+06  1.232838e+06  1251827.0  660471.25   
+         Austria              6.100040e+05  8.599820e+05   449915.0 -194749.00   
+         
+                              2002-2003   2003-2004  2004-2005  2005-2006  2006-2007  \textbackslash{}
+         Afghanistan            21445.0     5675.00   309801.0   260820.0   -45094.0   
+         Albania                18141.0    45440.00   114253.0   113463.0   173244.0   
+         Algeria               200174.0   800772.00   420595.0   541004.0   741592.0   
+         Angola                 16899.0    17014.00   114357.0   135968.0   236314.0   
+         Antigua and Barbuda     4016.0     6023.00     9031.0    24080.0     6993.0   
+         Argentina             429435.0  1621235.00   705941.0  1312070.0  2048088.0   
+         Armenia                80018.0    10011.00    11016.0    11833.0    12217.0   
+         Aruba                   2366.0     2631.00     2872.0     3106.0     3447.0   
+         Australia            1320942.5  1981413.75  2641885.0   837017.0   976597.0   
+         Austria               518152.0   969800.00   331556.0   487086.0   502736.0   
+         
+                              2007-2008  2008-2009  2009-2010  
+         Afghanistan            -4715.0   536454.0   170960.0  
+         Albania               282487.0   556321.0   126526.0  
+         Algeria               300195.0   420131.0   508622.0  
+         Angola                268934.0   283561.0   794884.0  
+         Antigua and Barbuda     4981.0      -38.0     5819.0  
+         Argentina             950043.0  2456509.0   927215.0  
+         Armenia                 6107.0   280791.0   888510.0  
+         Aruba                   3884.0     4103.0     4952.0  
+         Australia             751121.0   843505.0   661514.0  
+         Austria               314178.0    68826.0   -45321.0  
+\end{Verbatim}
+            
+    To answer our question we simply perform a max\_value search in the
+whole dataset.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}97}]:} \PY{n}{internet\PYZus{}users\PYZus{}variation}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{China}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}97}]:} 1990-1991    6.683333e+02
+         1991-1992    1.336667e+03
+         1992-1993    2.005000e+03
+         1993-1994    1.203000e+04
+         1994-1995    4.611500e+04
+         1995-1996    1.002490e+05
+         1996-1997    2.406010e+05
+         1997-1998    1.704102e+06
+         1998-1999    6.814362e+06
+         1999-2000    1.361895e+07
+         2000-2001    1.119377e+07
+         2001-2002    2.536553e+07
+         2002-2003    2.109288e+07
+         2003-2004    1.474971e+07
+         2004-2005    1.650925e+07
+         2005-2006    2.688585e+07
+         2006-2007    7.310170e+07
+         2007-2008    8.875316e+07
+         2008-2009    8.559838e+07
+         2009-2010    7.428931e+07
+         Name: China, dtype: float64
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}98}]:} \PY{n}{internet\PYZus{}users\PYZus{}variation}\PY{o}{.}\PY{n}{max}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{idxmax}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}98}]:} '2007-2008'
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}99}]:} \PY{n}{internet\PYZus{}users\PYZus{}variation}\PY{o}{.}\PY{n}{idxmax}\PY{p}{(}\PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}99}]:} 1990-1991    United States
+         1991-1992    United States
+         1992-1993    United States
+         1993-1994    United States
+         1994-1995    United States
+         1995-1996    United States
+         1996-1997    United States
+         1997-1998    United States
+         1998-1999    United States
+         1999-2000    United States
+         2000-2001    United States
+         2001-2002    United States
+         2002-2003            China
+         2003-2004            Japan
+         2004-2005            China
+         2005-2006            China
+         2006-2007            China
+         2007-2008            China
+         2008-2009            China
+         2009-2010            China
+         dtype: object
+\end{Verbatim}
+            
+    So China from 2007-2008 had the largest internet user growth of our
+dataset!
+
+    \subsubsection{Did internet users got smaller in any
+country?}\label{did-internet-users-got-smaller-in-any-country}
+
+    In order to answer this question, we list all minimum values of our
+table.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}100}]:} \PY{n}{internet\PYZus{}users\PYZus{}variation}\PY{o}{.}\PY{n}{min}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}100}]:} 1990-1991          0.0
+          1991-1992          0.0
+          1992-1993          0.0
+          1993-1994          0.0
+          1994-1995         -6.0
+          1995-1996          0.0
+          1996-1997      -1041.0
+          1997-1998         -2.0
+          1998-1999         -7.0
+          1999-2000         -6.0
+          2000-2001    -190011.0
+          2001-2002    -194749.0
+          2002-2003        -12.0
+          2003-2004      -8744.0
+          2004-2005    -399920.0
+          2005-2006    -479559.0
+          2006-2007    -464761.0
+          2007-2008   -1154856.0
+          2008-2009   -7234329.0
+          2009-2010     -45321.0
+          dtype: float64
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}101}]:} \PY{n}{internet\PYZus{}users\PYZus{}variation}\PY{o}{.}\PY{n}{idxmin}\PY{p}{(}\PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}101}]:} 1990-1991          Botswana
+          1991-1992           Burundi
+          1992-1993           Burundi
+          1993-1994           Burundi
+          1994-1995         Greenland
+          1995-1996           Algeria
+          1996-1997           Bahamas
+          1997-1998           Liberia
+          1998-1999          Dominica
+          1999-2000            Rwanda
+          2000-2001            Israel
+          2001-2002           Austria
+          2002-2003           Liberia
+          2003-2004              Oman
+          2004-2005      South Africa
+          2005-2006    United Kingdom
+          2006-2007            Sweden
+          2007-2008          Thailand
+          2008-2009     United States
+          2009-2010           Austria
+          dtype: object
+\end{Verbatim}
+            
+    So, answering the question, yes, there are many occasions in which the
+number of internet users got smaller in a country, and in fact it
+happened even in developed countries such as USA,UK, Sweden and Austria!
+We do not have enough info on the dataset however to know if this covers
+mobile internet usage or just cable/home internet plans.
+
+     \#\# Conclusions
+
+We observe that overall internet users are growing worldwide, but there
+are some cases in which the number has decreased. One huge example is in
+USA during 2008 and 2009, probably because of the economic crisis, but
+we cannot asser it for sure because we could not determine if this
+database consolidates all internet users or only cable/home internet
+plans.
+
+One noticeable country is China: if plotted against USA it is incredible
+to see the huge explosion of internet users and how it seems to never
+stop growing.
+
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+    \end{document}
