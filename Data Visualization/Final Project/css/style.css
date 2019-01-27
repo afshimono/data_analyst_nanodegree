@@ -1,0 +1,28 @@
+div.segmentation_buttons {
+    position: fixed;
+    top: 120px;
+    left: 50px;
+}
+div.segmentation_buttons div {
+    background-color: rgb(251, 201, 127);
+    padding: 3px;
+    margin: 7px;
+}
+
+div.graph_styles {
+    position: fixed;
+    top: 720px;
+    left: 50px;
+}
+
+div.graph_styles {
+    background-color: white;
+    padding: 3px;
+    margin: 7px;
+}
+
+
+svg {
+	position:fixed;
+	left:180px;
+}
